@@ -1,6 +1,6 @@
 package com.example.projetglsi3.Auth.Repository;
 
-import com.example.projetglsi3.Auth.Model.User;
+import com.example.projetglsi3.Model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

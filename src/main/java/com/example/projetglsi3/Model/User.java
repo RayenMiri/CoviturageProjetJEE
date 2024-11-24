@@ -1,4 +1,4 @@
-package com.example.projetglsi3.Auth.Model;
+package com.example.projetglsi3.Model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

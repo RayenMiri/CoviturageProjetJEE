@@ -1,6 +1,6 @@
 package com.example.projetglsi3.Auth.Security;
 
-import com.example.projetglsi3.Auth.Model.User;
+import com.example.projetglsi3.Model.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

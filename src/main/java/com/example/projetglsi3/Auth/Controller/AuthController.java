@@ -1,6 +1,6 @@
 package com.example.projetglsi3.Auth.Controller;
 
-import com.example.projetglsi3.Auth.Model.User;
+import com.example.projetglsi3.Model.User;
 import com.example.projetglsi3.Auth.Repository.userRepository;
 import com.example.projetglsi3.Auth.Security.JWTTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 

@@ -1,6 +1,6 @@
 package com.example.projetglsi3.Auth.Security;
 
-import com.example.projetglsi3.Auth.Model.User;
+import com.example.projetglsi3.Model.User;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
