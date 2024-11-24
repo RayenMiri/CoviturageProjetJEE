@@ -1,4 +1,4 @@
-package com.example.projetglsi3.Auth.Repository;
+package com.example.projetglsi3.Repository;
 
 import com.example.projetglsi3.Model.User;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,19 +1,26 @@
 package com.example.projetglsi3.Model;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
+
 public class Reservation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private long idReservation;
-  private int nbOfSeats;
+    private Long idReservation;
+    private int nbOfSeats;
 
-  private enum status {
+    private enum status {
         confirmed, cancelled
     }
 
-  private String createdAt, updatedAt;
+    private String createdAt, updatedAt;
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     @JoinColumn(name = "idRide")
     private Ride ride;

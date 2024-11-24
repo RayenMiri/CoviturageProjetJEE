@@ -1,7 +1,7 @@
 package com.example.projetglsi3.Auth.Controller;
 
 import com.example.projetglsi3.Model.User;
-import com.example.projetglsi3.Auth.Repository.userRepository;
+import com.example.projetglsi3.Repository.userRepository;
 import com.example.projetglsi3.Auth.Security.JWTTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
