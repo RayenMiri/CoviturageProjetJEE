@@ -5,18 +5,13 @@ import com.example.projetglsi3.Model.User;
 import com.example.projetglsi3.Repository.ReservationRepo;
 import com.example.projetglsi3.Repository.RideRepository;
 import com.example.projetglsi3.Repository.userRepository;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.metamodel.SetAttribute;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
-
-import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -27,10 +22,6 @@ public class ReservationServiceImpl implements ReservationIService{
     ReservationRepo resRep;
     userRepository userRepo;
     RideRepository rideRep;
-    @Override
-    public List<Reservation> getAllRes() {
-        return resRep.findAll();  // Fetch all reservations
-    }
     @Override
     public void updateAvailableSeats(Long IdRide,int nbReserv)
     {
@@ -47,7 +38,7 @@ public class ReservationServiceImpl implements ReservationIService{
 
     }
 
-
+    @Override
 
 //    public String makeRes(Long idUser, Long idRide, int nbSeats) {
 //    public Reservation makeRes(Long idUser, Long idRide, int nbSeats) {
@@ -66,12 +57,12 @@ public class ReservationServiceImpl implements ReservationIService{
 //        resRep.save(reservation);
 //        return reservation;
 //    }
-@Override
-    public Reservation makeRes(Long idUser, Long idRide, int nbSeats){
-         User user  = userRepo.findById(idUser).orElseThrow(() -> new RuntimeException("User not found"));;
-         Ride ride = rideRep.findById(idRide).orElseThrow(() -> new RuntimeException("Ride not found"));
+
+    public Reservation makeRes(Long idUser, Long idRide, int nbSeats) {
+        User user = userRepo.findById(idUser).orElseThrow(() -> new RuntimeException("User not found"));
+        Ride ride = rideRep.findById(idRide).orElseThrow(() -> new RuntimeException("Ride not found"));
         ride.setAvailableSeats(nbSeats);
-//        rideService.updateRide(idRide,ride);
+        rideService.updateRide(idRide,ride);
         Reservation reservation = new Reservation();
         reservation.setUser(user);
         reservation.setRide(ride);
@@ -81,22 +72,7 @@ public class ReservationServiceImpl implements ReservationIService{
         reservation.setUpdatedAt(LocalDateTime.now());
         System.out.println("tessssssssssssssssssssssssst"+reservation.toString());
         resRep.save(reservation);
-        return reservation;     }
-    @Override
-    public ResponseEntity<Reservation> addRes(Reservation reservation, Long idUser, Long idRide)
-    {
-
-        User user = userRepo.findById(idUser).orElseThrow(()->new EntityNotFoundException("idUser non trouvée"));
-        Ride ride = rideRep.findById(idRide).orElseThrow(()->new EntityNotFoundException("idRide non trouvée"));
-        reservation.setUser(user);
-        reservation.setRide(ride);
-//        reservation.setNbOfSeats(nbSeats);
-        reservation.setStatus(Reservation.status.confirmed);
-        reservation.setCreatedAt(LocalDateTime.now());
-        reservation.setUpdatedAt(LocalDateTime.now());
-        System.out.println("tessssssssssssssssssssssssst"+reservation.toString());
-        resRep.save(reservation);
-        return ResponseEntity.ok().body(reservation);
+        return reservation;
     }
 
     @Override

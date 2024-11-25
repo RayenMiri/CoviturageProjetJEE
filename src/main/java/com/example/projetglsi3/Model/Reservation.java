@@ -28,7 +28,7 @@ public class Reservation {
     private LocalDateTime updatedAt;
     // One ride can have multiple reservations ,One user can make multiple reservations
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
-    @JoinColumn(name = "idRide")
+    @JoinColumn(name = "id_ride")
     private Ride ride;
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     @JoinColumn(name = "id")
