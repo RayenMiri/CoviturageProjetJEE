@@ -17,22 +17,6 @@ public class RideServiceImpl implements RideService {
     private RideRepository rideRepository;
 
     @Override
-<<<<<<< HEAD
-    public List<Ride> getAllRides()
-    {
-        return rideRepo.findAll();
-    }
-
-    @Override
-    public int getAvailableSeats(Long idRide){
-       Ride ride= rideRepo.findById(idRide)
-                .orElseThrow(() -> new RuntimeException("Ride not found"));
-        return ride.getAvailableSeats();
-    }
-    @Override
-    public Ride updateRide(Long id, Ride updatedRide) {
-        Optional<Ride> existingRide = rideRepo.findById(id);
-=======
     public Ride createRide(Ride ride) {
         return rideRepository.save(ride);
     }
@@ -45,7 +29,6 @@ public class RideServiceImpl implements RideService {
     @Override
     public Ride updateRide(Long id, Ride updatedRide) {
         Optional<Ride> existingRide = rideRepository.findById(id);
->>>>>>> 046645e23fd3c564e81dfb5d9d203a24106e88ac
         if (existingRide.isPresent()) {
             Ride ride = existingRide.get();
             ride.setDepartureLocation(updatedRide.getDepartureLocation());
@@ -54,13 +37,6 @@ public class RideServiceImpl implements RideService {
             ride.setAvailableSeats(updatedRide.getAvailableSeats());
             ride.setPricePerSeat(updatedRide.getPricePerSeat());
 
-<<<<<<< HEAD
-            return rideRepo.save(ride);
-        }
-        return null;
-    }
-}
-=======
             return rideRepository.save(ride);
         }
         return null;
@@ -102,4 +78,3 @@ public class RideServiceImpl implements RideService {
         return ResponseEntity.badRequest().build();
     }
 }
->>>>>>> 046645e23fd3c564e81dfb5d9d203a24106e88ac

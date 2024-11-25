@@ -12,13 +12,8 @@ import java.util.List;
 
 
 @RestController
-<<<<<<< HEAD
-@Controller
-@RequestMapping("/api/rides")
-=======
 @RequestMapping("/api/rides")
 
->>>>>>> 046645e23fd3c564e81dfb5d9d203a24106e88ac
 public class RideController {
 
     @Autowired
@@ -40,14 +35,6 @@ public class RideController {
         System.out.println("Fetched Rides: " + rides);
         return rides;
     }
-<<<<<<< HEAD
-    @GetMapping("/{idRide}/seats")
-    public int getAvailableSeats(@PathVariable Long idRide){
-        int x=rideService.getAvailableSeats(idRide);
-        if(x==0){System.out.println("No available seats found");}
-        return x;
-    }
-=======
 
     @GetMapping("/getRideById/{id}")
     public Ride getRideById(@PathVariable Long id) {
@@ -69,7 +56,6 @@ public class RideController {
         return rides;
     }
 
->>>>>>> 046645e23fd3c564e81dfb5d9d203a24106e88ac
     @PostMapping("/updateRide/{id}")
     public Ride updateRide(@PathVariable Long id, @RequestBody Ride updatedRide) {
         Ride ride = rideService.updateRide(id, updatedRide);
@@ -79,9 +65,6 @@ public class RideController {
         System.out.println("Updated Ride: " + ride);
         return ride;
     }
-<<<<<<< HEAD
-}
-=======
 
     @DeleteMapping("/deleteRide/{id}")
     public void deleteRide(@PathVariable Long id) {
@@ -104,4 +87,3 @@ public class RideController {
         return rides;
     }
 }
->>>>>>> 046645e23fd3c564e81dfb5d9d203a24106e88ac
