@@ -2,7 +2,6 @@ package com.example.projetglsi3.Model;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 @Entity
 @ToString
 @Getter

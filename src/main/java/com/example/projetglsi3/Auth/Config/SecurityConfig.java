@@ -41,8 +41,13 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth ->
-                    auth.requestMatchers("/getAllRides").permitAll()
-                            .anyRequest().authenticated()
+                        auth
+                                .requestMatchers("/api/auth/**").permitAll()
+                                .requestMatchers("/api/rides/**").permitAll()
+                                .requestMatchers("/api/reservation/**").permitAll()
+                                .requestMatchers("/api/reservation/reserve/**").permitAll()
+                                .requestMatchers("/api/reservation/cancel/**").permitAll()
+                                .anyRequest().authenticated()
                 );
         http.addFilterBefore(JWTAuthentificationFilter(),UsernamePasswordAuthenticationFilter.class);
         System.out.println("SecurityFilterChain invoked for: " + http);

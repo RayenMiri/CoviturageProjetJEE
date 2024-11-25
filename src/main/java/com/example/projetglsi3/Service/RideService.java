@@ -9,4 +9,6 @@ import java.util.List;
 @Service
 public interface RideService {
     List<Ride> getAllRides();
+    public int getAvailableSeats(Long idRide);
+    Ride updateRide(Long id, Ride updatedRide);
 }
