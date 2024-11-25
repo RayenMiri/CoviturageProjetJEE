@@ -2,12 +2,9 @@ package com.example.projetglsi3.Model;
 
 import jakarta.persistence.*;
 import lombok.*;
-<<<<<<< HEAD
-=======
 
 import java.time.LocalDateTime;
 
->>>>>>> 046645e23fd3c564e81dfb5d9d203a24106e88ac
 @Entity
 @ToString
 @Getter
