@@ -1,23 +1,23 @@
 package com.example.projetglsi3.Service;
 
 import com.example.projetglsi3.Model.Ride;
-import com.example.projetglsi3.Repository.RideRepo;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.experimental.FieldDefaults;
+import com.example.projetglsi3.Repository.RideRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-@AllArgsConstructor
-@FieldDefaults (level = AccessLevel.PRIVATE)
 @Service
 public class RideServiceImpl implements RideService {
-    RideRepo rideRepo;
+
+    @Autowired
+    private RideRepository rideRepository;
+
     @Override
+<<<<<<< HEAD
     public List<Ride> getAllRides()
     {
         return rideRepo.findAll();
@@ -32,6 +32,20 @@ public class RideServiceImpl implements RideService {
     @Override
     public Ride updateRide(Long id, Ride updatedRide) {
         Optional<Ride> existingRide = rideRepo.findById(id);
+=======
+    public Ride createRide(Ride ride) {
+        return rideRepository.save(ride);
+    }
+
+    @Override
+    public Ride getRideById(Long id) {
+        return rideRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public Ride updateRide(Long id, Ride updatedRide) {
+        Optional<Ride> existingRide = rideRepository.findById(id);
+>>>>>>> 046645e23fd3c564e81dfb5d9d203a24106e88ac
         if (existingRide.isPresent()) {
             Ride ride = existingRide.get();
             ride.setDepartureLocation(updatedRide.getDepartureLocation());
@@ -40,8 +54,52 @@ public class RideServiceImpl implements RideService {
             ride.setAvailableSeats(updatedRide.getAvailableSeats());
             ride.setPricePerSeat(updatedRide.getPricePerSeat());
 
+<<<<<<< HEAD
             return rideRepo.save(ride);
         }
         return null;
     }
 }
+=======
+            return rideRepository.save(ride);
+        }
+        return null;
+    }
+
+    @Override
+    public void deleteRide(Long id) {
+        rideRepository.deleteById(id);
+    }
+
+    @Override
+    public List<Ride> getRidesByDriverId(Long driverId) {
+        return rideRepository.findByDriverId(driverId);
+    }
+
+    @Override
+    public List<Ride> getAllRides() {
+        return rideRepository.findAll();
+    }
+
+    @Override
+    public List<Ride> searchRides(String departureLocation, String destination, LocalDateTime departureTime, Double maxPrice) {
+        return rideRepository.findByDepartureLocationAndDestinationAndDepartureDateTimeAfterAndPricePerSeatLessThanEqual(
+                departureLocation, destination, departureTime, maxPrice);
+    }
+
+    @Override
+    public ResponseEntity<?> updateAvailableSeats(Long rideId, int seatsBooked) {
+        Optional<Ride> optionalRide = rideRepository.findById(rideId);
+        if (optionalRide.isPresent()) {
+            Ride ride = optionalRide.get();
+            int availableSeats = ride.getAvailableSeats();
+            if (availableSeats >= seatsBooked) {
+                ride.setAvailableSeats(availableSeats - seatsBooked);
+                rideRepository.save(ride);
+                return ResponseEntity.ok().build();
+            }
+        }
+        return ResponseEntity.badRequest().build();
+    }
+}
+>>>>>>> 046645e23fd3c564e81dfb5d9d203a24106e88ac
