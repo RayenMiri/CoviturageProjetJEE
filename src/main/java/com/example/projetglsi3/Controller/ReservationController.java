@@ -27,7 +27,7 @@ public class ReservationController {
     }
 
     @PutMapping("/cancel/{idRes}")
-    public ResponseEntity<String> annulerRes(@RequestParam Long idRes)
+    public ResponseEntity<String> annulerRes(@PathVariable Long idRes)
     {
         try {
             String msg= resService.annulerRes(idRes);
