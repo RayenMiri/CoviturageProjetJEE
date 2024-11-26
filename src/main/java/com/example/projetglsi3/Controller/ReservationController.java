@@ -18,14 +18,9 @@ public class ReservationController {
     @Autowired
     ReservationIService resService;
 
-    @PostMapping("/reserve/{idUser}/{idRide}/{nbSeats}")
-//    public Reservation makeRes(@PathVariable Long idUser, @PathVariable Long idRide, @PathVariable int nbSeats) {
-//        return resService.makeRes(idUser, idRide, nbSeats);
-//    }
-    public Reservation makeRes(@RequestBody Reservation reservation, @PathVariable Long idUser, @PathVariable Long idRide ,@PathVariable int nbSeats) {
-        return resService.makeRes(idUser, idRide, nbSeats);
-    }
-
+    @PostMapping("/createReservation/{idUser}/{idRide}/{nbSeats}")
+    public Reservation createReservation(@RequestBody Reservation reservation, @PathVariable Long idUser, @PathVariable Long idRide ,@PathVariable int nbSeats) {
+        return resService.createReservation(idUser, idRide, nbSeats);}
     @PutMapping("/cancel/{idRes}")
     public ResponseEntity<String> annulerRes(@PathVariable Long idRes)
     {

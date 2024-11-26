@@ -37,32 +37,19 @@ public class ReservationServiceImpl implements ReservationIService{
         }
 
     }
-
     @Override
-
-//    public String makeRes(Long idUser, Long idRide, int nbSeats) {
-//    public Reservation makeRes(Long idUser, Long idRide, int nbSeats) {
-//        User user = userRepo.findById(idUser).orElseThrow(() -> new RuntimeException("User not found"));
-//        Ride ride = rideRep.findById(idRide).orElseThrow(() -> new RuntimeException("Ride not found"));
-//
-//        updateAvailableSeats(idRide, nbSeats);
-//        Reservation reservation = new Reservation();
-//        reservation.setUser(user);
-//        reservation.setRide(ride);
-//        reservation.setNbOfSeats(nbSeats);
-//        reservation.setStatus(Reservation.status.confirmed);
-//        reservation.setCreatedAt(LocalDateTime.now());
-//        reservation.setUpdatedAt(LocalDateTime.now());
-//        System.out.println("tessssssssssssssssssssssssst"+reservation.toString());
-//        resRep.save(reservation);
-//        return reservation;
-//    }
-
-    public Reservation makeRes(Long idUser, Long idRide, int nbSeats) {
+    public Reservation createReservation(Long idUser, Long idRide, int nbSeats) {
+        System.out.println("Creating reservation...");
         User user = userRepo.findById(idUser).orElseThrow(() -> new RuntimeException("User not found"));
+        System.out.println("User found: " + user.toString());
         Ride ride = rideRep.findById(idRide).orElseThrow(() -> new RuntimeException("Ride not found"));
-        ride.setAvailableSeats(nbSeats);
-        rideService.updateRide(idRide,ride);
+        System.out.println("Ride found: " + ride.toString());
+        if (ride.getAvailableSeats() < nbSeats) {
+            throw new IllegalArgumentException("Not enough available seats");
+        }
+        ride.setAvailableSeats(ride.getAvailableSeats() - nbSeats);
+        rideService.updateRide(idRide, ride);
+        System.out.println("Available seats updated for ride: " + idRide);
         Reservation reservation = new Reservation();
         reservation.setUser(user);
         reservation.setRide(ride);
@@ -70,11 +57,11 @@ public class ReservationServiceImpl implements ReservationIService{
         reservation.setStatus(Reservation.status.confirmed);
         reservation.setCreatedAt(LocalDateTime.now());
         reservation.setUpdatedAt(LocalDateTime.now());
-        System.out.println("tessssssssssssssssssssssssst"+reservation.toString());
+        System.out.println("New reservation: " + reservation.toString());
         resRep.save(reservation);
+        System.out.println("Reservation saved!");
         return reservation;
     }
-
     @Override
     public String annulerRes(Long idRes) {
 
