@@ -5,11 +5,12 @@ import com.example.projetglsi3.Model.User;
 import com.example.projetglsi3.Repository.ReservationRepo;
 import com.example.projetglsi3.Repository.RideRepository;
 import com.example.projetglsi3.Repository.userRepository;
-import jakarta.persistence.metamodel.SetAttribute;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
 
@@ -36,25 +37,8 @@ public class ReservationServiceImpl implements ReservationIService {
         }
     }
 
-    /*public Reservation makeRes(Long idUser, Long idRide, int nbSeats) {
-        User user = userRepo.findById(idUser).orElseThrow(() -> new RuntimeException("User not found"));
-        Ride ride = rideRep.findById(idRide).orElseThrow(() -> new RuntimeException("Ride not found"));
-        ride.setAvailableSeats(nbSeats);
-        rideService.updateRide(idRide,ride);
-        Reservation reservation = new Reservation();
-        reservation.setUser(user);
-        reservation.setRide(ride);
-        reservation.setNbOfSeats(nbSeats);
-        reservation.setStatus(Reservation.status.confirmed);
-        reservation.setCreatedAt(LocalDateTime.now());
-        reservation.setUpdatedAt(LocalDateTime.now());
-        System.out.println("tessssssssssssssssssssssssst"+reservation.toString());
-        resRep.save(reservation);
-        return reservation;
-    }*/
-
     @Override
-    public String annulerRes(Long idRes) {
+    public String cancelReservation(Long idRes) {
         Reservation res = resRep.findById(idRes).orElseThrow(() -> new RuntimeException("Reservation not found"));
         res.setStatus(Reservation.status.cancelled);
         res.setUpdatedAt(LocalDateTime.now());
@@ -63,36 +47,67 @@ public class ReservationServiceImpl implements ReservationIService {
     }
 
     @Override
-    public Reservation createReservation(Long idUser, Long idRide, int nbSeats) {
-        System.out.println("Creating reservation...");
+    public ResponseEntity<?> createReservation(Long idUser, Long idRide, int nbSeats) {
+        try {
+            System.out.println("Creating reservation...");
 
-        User user = userRepo.findById(idUser).orElseThrow(() -> new RuntimeException("User not found"));
-        System.out.println("User found: " + user.toString());
+            User user = userRepo.findById(idUser)
+                    .orElseThrow(() -> new UserNotFoundException("User with ID " + idUser + " not found."));
+            System.out.println("User found: " + user);
 
-        Ride ride = rideRep.findById(idRide).orElseThrow(() -> new RuntimeException("Ride not found"));
-        System.out.println("Ride found: " + ride.toString());
+            Ride ride = rideRep.findById(idRide)
+                    .orElseThrow(() -> new RideNotFoundException("Ride with ID " + idRide + " not found."));
+            System.out.println("Ride found: " + ride);
 
-        if (ride.getAvailableSeats() < nbSeats) {
-            throw new IllegalArgumentException("Not enough available seats");
+            if (ride.getAvailableSeats() < nbSeats) {
+                throw new SeatsNotAvailableException("Requested seats " + nbSeats + " exceed available seats " + ride.getAvailableSeats());
+            }
+
+            // Update the available seats
+            ride.setAvailableSeats(ride.getAvailableSeats() - nbSeats);
+            rideRep.save(ride); // Save updated ride
+            System.out.println("Available seats updated for ride: " + idRide);
+
+            // Create a new reservation
+            Reservation reservation = new Reservation();
+            reservation.setUser(user);
+            reservation.setRide(ride);
+            reservation.setNbOfSeats(nbSeats);
+            reservation.setStatus(Reservation.status.confirmed);
+            reservation.setCreatedAt(LocalDateTime.now());
+            reservation.setUpdatedAt(LocalDateTime.now());
+
+            System.out.println("New reservation: " + reservation);
+
+            resRep.save(reservation); // Save reservation
+            System.out.println("Reservation saved!");
+
+            // Return success response
+            return ResponseEntity.ok(reservation);
+        } catch (UserNotFoundException | RideNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (SeatsNotAvailableException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred: " + e.getMessage());
         }
+    }
 
-        ride.setAvailableSeats(ride.getAvailableSeats() - nbSeats);
-        rideService.updateRide(idRide, ride);
-        System.out.println("Available seats updated for ride: " + idRide);
+    public static class UserNotFoundException extends RuntimeException {
+        public UserNotFoundException(String message) {
+            super(message);
+        }
+    }
 
-        Reservation reservation = new Reservation();
-        reservation.setUser(user);
-        reservation.setRide(ride);
-        reservation.setNbOfSeats(nbSeats);
-        reservation.setStatus(Reservation.status.confirmed);
-        reservation.setCreatedAt(LocalDateTime.now());
-        reservation.setUpdatedAt(LocalDateTime.now());
+    public static class RideNotFoundException extends RuntimeException {
+        public RideNotFoundException(String message) {
+            super(message);
+        }
+    }
 
-        System.out.println("New reservation: " + reservation.toString());
-
-        resRep.save(reservation);
-        System.out.println("Reservation saved!");
-
-        return reservation;
+    public static class SeatsNotAvailableException extends RuntimeException {
+        public SeatsNotAvailableException(String message) {
+            super(message);
+        }
     }
 }
