@@ -11,4 +11,6 @@ import java.util.List;
 public interface RideRepository extends JpaRepository <Ride, Long>{
     List<Ride> findByDepartureLocationAndDestinationAndDepartureDateTimeAfterAndPricePerSeatLessThanEqual(String departurePoint, String destination, LocalDateTime departureTime, Double maxPrice);
     List<Ride> findByDriverId(Long driverId);
+    List<Ride>findByDepartureLocation(String location);
+    List<Ride>findByDestination(String destination);
 }

@@ -85,4 +85,14 @@ public class RideController {
         System.out.println("Fetched Rides: " + rides);
         return responseEntity;
     }
+    @GetMapping("/searchByDepartLocation/{location}")
+    public ResponseEntity<?> getRidesByDepartLocation(@PathVariable String location)
+    {
+        return rideService.getRidesByDepartLocation(location);
+    }
+    @GetMapping("/searchByDestination/{location}")
+    public ResponseEntity<?> getRidesByDestination(@PathVariable String location)
+    {
+        return rideService.getRidesByDestination(location);
+    }
 }

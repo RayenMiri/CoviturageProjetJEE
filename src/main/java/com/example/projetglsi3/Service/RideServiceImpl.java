@@ -135,6 +135,30 @@ public class RideServiceImpl implements RideService {
                     .body("An unexpected error occurred: " + e.getMessage());
         }
     }
+    @Override
+    public ResponseEntity<?> getRidesByDepartLocation(String location){
+        try {
+            List<Ride> rides = rideRepository.findByDepartureLocation(location);
+            return ResponseEntity.ok(rides);
+        }catch (LocationNotFoundException e){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }catch(Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred: " + e.getMessage());
+    }
+    }
+    @Override
+    public ResponseEntity<?> getRidesByDestination(String location){
+        try {
+            List<Ride> rides = rideRepository.findByDestination(location);
+            return ResponseEntity.ok(rides);
+        }catch (LocationNotFoundException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }catch(Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred: " + e.getMessage());
+        }
+    }
+
+
 
     public static class RideNotFoundException extends RuntimeException {
         public RideNotFoundException(String message) {
@@ -147,5 +171,9 @@ public class RideServiceImpl implements RideService {
             super(message);
         }
     }
-
+    public static class LocationNotFoundException extends RuntimeException {
+        public LocationNotFoundException(String message) {
+            super(message);
+        }
+    }
 }

@@ -16,4 +16,7 @@ public interface RideService {
     ResponseEntity<?> getAllRides();
     ResponseEntity<?> searchRides(String departurePoint, String destination, LocalDateTime departureTime, Double maxPrice);
     ResponseEntity<?> updateAvailableSeats(Long rideId, int seatsBooked);
+    ResponseEntity<?> getRidesByDepartLocation(String location);
+    ResponseEntity<?> getRidesByDestination(String location);
+
 }
