@@ -5,16 +5,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 public interface RideService {
-    Ride createRide(Ride ride);
-    Ride getRideById(Long id);
-    Ride updateRide(Long id, Ride updatedRide);
-    void deleteRide(Long id);
-    List<Ride> getRidesByDriverId(Long driverId);
-    List<Ride> getAllRides();
-    List<Ride> searchRides(String departurePoint, String destination, LocalDateTime departureTime, Double maxPrice);
+    ResponseEntity<?> createRide(Ride ride);
+    ResponseEntity<?> getRideById(Long id);
+    ResponseEntity<?> updateRide(Long id, Ride updatedRide);
+    ResponseEntity<?> deleteRide(Long id);
+    ResponseEntity<?> getRidesByDriverId(Long driverId);
+    ResponseEntity<?> getAllRides();
+    ResponseEntity<?> searchRides(String departurePoint, String destination, LocalDateTime departureTime, Double maxPrice);
     ResponseEntity<?> updateAvailableSeats(Long rideId, int seatsBooked);
 }

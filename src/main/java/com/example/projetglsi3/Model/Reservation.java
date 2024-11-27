@@ -31,7 +31,6 @@ public class Reservation {
     @JoinColumn(name = "id_ride")
     private Ride ride;
     @ManyToOne
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "id",unique = true)
     private User user;
-
 }

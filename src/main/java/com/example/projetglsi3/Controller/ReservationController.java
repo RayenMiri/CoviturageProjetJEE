@@ -1,5 +1,4 @@
 package com.example.projetglsi3.Controller;
-import com.example.projetglsi3.Model.Reservation;
 import com.example.projetglsi3.Service.ReservationIService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,17 +18,24 @@ public class ReservationController {
     ReservationIService resService;
 
     @PostMapping("/createReservation/{idUser}/{idRide}/{nbSeats}")
-    public Reservation createReservation(@RequestBody Reservation reservation, @PathVariable Long idUser, @PathVariable Long idRide ,@PathVariable int nbSeats) {
-        return resService.createReservation(idUser, idRide, nbSeats);}
-    @PutMapping("/cancel/{idRes}")
-    public ResponseEntity<String> annulerRes(@PathVariable Long idRes)
+    public ResponseEntity<?> createReservation(@PathVariable Long idUser, @PathVariable Long idRide , @PathVariable int nbSeats) {
+        return resService.createReservation(idUser, idRide, nbSeats);
+    }
+
+    @PutMapping("/cancelReservation/{idRes}")
+    public ResponseEntity<String> cancelReservation(@PathVariable Long idRes)
     {
         try {
-            String msg= resService.annulerRes(idRes);
+            String msg= resService.cancelReservation(idRes);
             return ResponseEntity.ok(msg);
         } catch (RuntimeException e) {
             return  ResponseEntity.status(HttpStatus.NOT_FOUND).body("Réservation non trouvée");
         }
+    }
+    @GetMapping("/History/{IdUser}")
+    public ResponseEntity<?> consultHistory(@PathVariable Long IdUser){
+       return resService.consultHistory(IdUser);
+
     }
 
 }
