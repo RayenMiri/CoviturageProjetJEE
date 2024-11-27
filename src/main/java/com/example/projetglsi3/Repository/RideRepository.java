@@ -13,4 +13,5 @@ public interface RideRepository extends JpaRepository <Ride, Long>{
     List<Ride> findByDriverId(Long driverId);
     List<Ride>findByDepartureLocation(String location);
     List<Ride>findByDestination(String destination);
+    List<Ride>findByavailableSeats(int nbSeats);
 }

@@ -95,4 +95,9 @@ public class RideController {
     {
         return rideService.getRidesByDestination(location);
     }
+    @GetMapping("/searchBynbSeats/{nbSeats}")
+    public ResponseEntity<?> getRidesByAvailableSeats(@PathVariable int nbSeats)
+    {
+        return rideService.getRidesByAvailableSeats(nbSeats);
+    }
 }

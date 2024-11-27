@@ -141,10 +141,10 @@ public class RideServiceImpl implements RideService {
             List<Ride> rides = rideRepository.findByDepartureLocation(location);
             return ResponseEntity.ok(rides);
         }catch (LocationNotFoundException e){
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }catch(Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred: " + e.getMessage());
-    }
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred: " + e.getMessage());
+        }
     }
     @Override
     public ResponseEntity<?> getRidesByDestination(String location){
@@ -157,7 +157,21 @@ public class RideServiceImpl implements RideService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred: " + e.getMessage());
         }
     }
+    @Override
+    public ResponseEntity<?> getRidesByAvailableSeats(int nbSeats) {
+        try {
+            List<Ride> rides = rideRepository.findByavailableSeats(nbSeats);
+            if (rides == null || rides.isEmpty())
+            {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No rides available with " + nbSeats + " seats.");
+            }
+            return ResponseEntity.ok(rides);
 
+        }catch (Exception e)
+        {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred: " + e.getMessage());
+        }
+    }
 
 
     public static class RideNotFoundException extends RuntimeException {
