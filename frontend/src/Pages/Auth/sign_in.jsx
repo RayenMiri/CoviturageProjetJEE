@@ -45,11 +45,12 @@ const SignIn = () => {
                     loginSuccess({
                         token: data.token,
                         username: data.username,
+                        role:data.role,
                     })
                 );
                 setSuccessMessage(`Login successful! Welcome, ${data.username}.`);
                 setTimeout(() => {
-                    dispatch(handleSigninSuccess(navigate));
+                    dispatch(handleSigninSuccess(navigate,data));
                 }, 1500);
             }
         } catch (err) {

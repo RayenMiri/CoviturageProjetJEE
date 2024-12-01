@@ -15,6 +15,7 @@ const authSlice = createSlice({
             state.isAuthenticated = true;
             state.loading = false;
             localStorage.setItem('user', JSON.stringify(state.user));
+            console.log(state.user);
         },
 
         signupSuccess: (state, action) => {
@@ -51,10 +52,10 @@ export const handleSignupSuccess = (navigate) => {
     };
 };
 
-export const handleSigninSuccess = (navigate) => {
+export const handleSigninSuccess = (navigate,user) => {
     return (dispatch) => {
-        dispatch(loginSuccess());
-        navigate('/signup');
+        dispatch(loginSuccess(user));
+        navigate('/dashboard');
     };
 };
 
