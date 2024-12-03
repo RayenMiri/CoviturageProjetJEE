@@ -1,7 +1,7 @@
 export const loginUser  = async (credentials)=>{
 
 
-        const response = await fetch('http://localhost:8081/api/auth/signin', {
+        const response = await fetch('http://localhost:8083/api/auth/signin', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -34,7 +34,7 @@ export const loginUser  = async (credentials)=>{
 
 export const signupUser = async (username, email, password, role) => {
 
-    const response = await fetch('http://localhost:8081/api/auth/signup', {
+    const response = await fetch('http://localhost:8083/api/auth/signup', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
