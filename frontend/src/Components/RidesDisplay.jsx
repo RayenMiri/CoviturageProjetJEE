@@ -25,7 +25,7 @@ const RidesDisplay = ({ userID, userRole }) => {
                 dispatch(fetchRides());
             }
         }
-    }, [dispatch, userID, userRole,rides]);
+    }, [dispatch, userID, userRole]);
 
     const handleFilterChange = (e) => {
         const { name, value } = e.target;
