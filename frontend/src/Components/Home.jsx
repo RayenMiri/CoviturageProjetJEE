@@ -1,20 +1,33 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchRides } from '../Store/Slices/ridesSlice';
+import { createReservation } from '../Store/Slices/reservationSlice';
 import {Link, useNavigate} from "react-router-dom";
+import {useState} from "react";
+import Modal from "./Modal"
+
 const Home =()=>{
     const dispatch = useDispatch();
     // Access rides, loading, and error states from the Redux store
     const { rides, loading, error } = useSelector((state) => state.rides);
+    const [isModalVisible, setModalVisible] = useState(false);
+    const [selectedRide, setSelectedRide] = useState(null);
     // Fetch rides when the component mounts
+
     useEffect(() => {
         dispatch(fetchRides());
     }, [dispatch]);
+
     const user = JSON.parse(localStorage.getItem("user"));
     const navigate = useNavigate();
     if (!user || user.role !== "PASSENGER") {
         navigate('/error');
         return null;}
+    const handleReserveClick = (ride) => {
+        setSelectedRide(ride);
+        setModalVisible(true);
+    };
+
 
     return (
         <div className="homepage">
@@ -50,43 +63,60 @@ const Home =()=>{
                                 <ul className='text-sm list-disc ml-0 "'>
                                     <li className="mb-2"><span
                                         className="font-bold">Departure Location:</span> {ride.departureLocation}</li>
-                                    <li className="mb-2 "><span
-                                        className="font-bold">Destination</span>: {ride.destination}</li>
-                                    <li className="mb-2 "><span
-                                        className="font-bold">Available Seats :</span> {ride.availableSeats}</li>
-                                    <li className="mb-2 "><span
-                                        className="font-bold">Price Per Seat :</span> {ride.pricePerSeat}</li>
-                                    <li className="mb-2 "><span className="font-bold">Restrictions :</span> {ride.restrictions}</li>
                                     <li className="mb-2"><span
-                                        className="font-bold">Date:</span> {new Date(ride.departureDateTime).toLocaleDateString()}
-                                    </li>
+                                        className="font-bold">Destination:</span> {ride.destination}</li>
+                                    <li className="mb-2"><span
+                                        className="font-bold">Available Seats:</span> {ride.availableSeats}</li>
+                                    <li className="mb-2"><span
+                                        className="font-bold">Price Per Seat:</span> {ride.pricePerSeat}</li>
+                                    <li className="mb-2"><span className="font-bold">Restrictions:</span> {ride.restrictions}</li>
+                                    <li className="mb-2"><span
+                                        className="font-bold">Date:</span> {new Date(ride.departureDateTime).toLocaleDateString()}</li>
                                     <li className="mb-2"><span
                                         className="font-bold">Time:</span> {new Date(ride.departureDateTime).toLocaleTimeString([], {
                                         hour: '2-digit',
                                         minute: '2-digit'
                                     })}</li>
-
                                 </ul>
                                 <div className="flex justify-end space-x-4">
                                     <button
+                                        onClick={() => handleReserveClick(ride)} // Open the modal
                                         className="sm:w-auto lg:w-auto my-2 border rounded-md py-2 px-4 text-center bg-indigo-600 text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-700 focus:ring-opacity-50 text-sm">
-                                        <Link to="/" className="block w-full h-full text-white no-underline">Reserve</Link>
+                                        Reserve
                                     </button>
                                     <button
-                                        className="sm:w-auto lg:w-auto my-2 border rounded-md py-2 px-4 text-center bg-green-600 text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-700 focus:ring-opacity-50 text-sm"
-                                    >
-                                       < Link to="/ridesMap" className="block w-full h-full text-white no-underline">
-                                        View in Map</Link>
+                                        className="sm:w-auto lg:w-auto my-2 border rounded-md py-2 px-4 text-center bg-green-600 text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-700 focus:ring-opacity-50 text-sm">
+                                        <Link to="/ridesMap" className="block w-full h-full text-white no-underline">
+                                            View in Map
+                                        </Link>
                                     </button>
                                 </div>
-
                             </div>
                         </div>
                     </div>
                 ))}
             </div>
 
+            {/* Render the Modal */}
+            {isModalVisible && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                    <Modal
+                        isVisible={isModalVisible}
+                        ride={selectedRide}
+                        user={user}
+                        onClose={() => setModalVisible(false)} // Close modal
+                        onConfirm={(reservationDetails) => {
+                            dispatch(createReservation());
+                            setModalVisible(false); // Close modal on success
+                        }}
+
+                    />
+                    <button
+                        onClick={() => setModalVisible(false)}
+                        className="absolute top-2 right-2 text-white bg-red-500 rounded-full px-3 py-1 hover:bg-red-600">X</button>
+                </div>
+            )}
         </div>
     );
-}
+};
 export default Home;
