@@ -1,26 +1,34 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { createReservationAPI } from "../Services/reservationService";
-
 const initialState = {
     reservations: [],
     loading: false,
     error: null,
 };
 
-// Async thunk to handle creating a reservation
+// // Async thunk to handle creating a reservation
+// export const createReservation = createAsyncThunk(
+//     'reservation/createReservation',
+//     async (reservationDetails, { rejectWithValue }) => {
+//         try {
+//             return await createReservationAPI(reservationDetails);
+//         } catch (error) {
+//             return rejectWithValue(error.message);
+//         }
+//     }
+// );
+//honiiiiiiiiiiiiiiiiiii
 export const createReservation = createAsyncThunk(
     'reservation/createReservation',
     async (reservationDetails, { rejectWithValue }) => {
         try {
+            console.log(reservationDetails)
             return await createReservationAPI(reservationDetails);
         } catch (error) {
             return rejectWithValue(error.message);
         }
     }
 );
-
-
-// Slice
 const reservationSlice = createSlice({
     name: 'reservations',
     initialState,
@@ -33,6 +41,7 @@ const reservationSlice = createSlice({
             })
             .addCase(createReservation.fulfilled, (state, action) => {
                 state.loading = false;
+                console.log('New Reservation:', action.payload);
                 state.reservations.push(action.payload);
             })
             .addCase(createReservation.rejected, (state, action) => {

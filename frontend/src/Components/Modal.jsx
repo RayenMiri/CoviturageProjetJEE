@@ -1,7 +1,10 @@
 import React from 'react';
 import {useState} from "react"
+import {useDispatch} from "react-redux";
+import {createReservation} from "../Store/Slices/reservationSlice";
 const Modal = ({ isVisible, ride, user, onClose, onConfirm }) => {
     const [seats, setSeats] = useState(1);
+    const dispatch = useDispatch();
     // Return null if Modal is not visible
     if (!isVisible) return null;
     // Handle missing ride gracefully
@@ -15,21 +18,22 @@ const Modal = ({ isVisible, ride, user, onClose, onConfirm }) => {
             </div>
         );
     }
+
     const handleConfirm = () => {
         const reservationDetails = {
-            idUser: user.id,      // Get user id from localStorage or state
-            idRide: ride.id,      // Get ride id from the selected ride
-            seats: seats     // Get number of seats from the input or default value
+            idUser:user.userId,         // Ensure user.id is available
+            idRide: ride.idRide,         // Ensure ride.id is available
+            nbOfSeats: seats,        // Ensure seats are correctly set
         };
 
-        console.log('Reservation Details:', reservationDetails);  // Debugging line
-        onConfirm(reservationDetails);  // Pass structured data to parent component
+        console.log('Reservation Details:', reservationDetails);  // Debugging log to check data before dispatch
+        dispatch(createReservation(reservationDetails));
+        onConfirm(reservationDetails);
     };
-
     return(
         <div className="flex flex-col max-w-md gap-2 p-6 rounded-md
          shadow-md bg-gray-100 dark:text-gray-200">
-            <h2 className="text-xl font-semibold leading-tight tracking-wide">Comfirming your Reservation ..</h2>
+            <h2 className="text-xl font-semibold leading-tight tracking-wide">Confirming your Reservation ..</h2>
             <p className="flex-1 dark:text-gray-600">
                 Hello dear passenger , How many seats do you wish to reserve ?
             </p>

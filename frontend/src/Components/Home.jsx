@@ -5,6 +5,7 @@ import { createReservation } from '../Store/Slices/reservationSlice';
 import {Link, useNavigate} from "react-router-dom";
 import {useState} from "react";
 import Modal from "./Modal"
+import {getCurrentTime} from "../Utils/getCurrentTimeUtil";
 
 const Home =()=>{
     const dispatch = useDispatch();
@@ -17,17 +18,29 @@ const Home =()=>{
     useEffect(() => {
         dispatch(fetchRides());
     }, [dispatch]);
-
+    const [newReservation, setNewReservation] = useState({
+        idRide: "",
+        idUser: "",
+        nbOfSeats: 1,// Default to 1 seat
+        createdAt: getCurrentTime(),
+        updatedAt: getCurrentTime(),
+    })
     const user = JSON.parse(localStorage.getItem("user"));
+    const userID = user.userId;
     const navigate = useNavigate();
     if (!user || user.role !== "PASSENGER") {
         navigate('/error');
         return null;}
     const handleReserveClick = (ride) => {
+        console.log("Ride Details:", JSON.stringify(ride)); // Debug log
         setSelectedRide(ride);
+        setNewReservation((prev) => ({
+            ...prev,
+            idRide: ride.idRide, // Ensure idRide exists on ride
+            idUser: userID,     // Set idUser from the user object
+        }));
         setModalVisible(true);
     };
-
 
     return (
         <div className="homepage">
@@ -97,17 +110,24 @@ const Home =()=>{
                 ))}
             </div>
 
-            {/* Render the Modal */}
             {isModalVisible && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
                     <Modal
                         isVisible={isModalVisible}
-                        ride={selectedRide}
-                        user={user}
-                        onClose={() => setModalVisible(false)} // Close modal
+                        ride={selectedRide} // Pass the selected ride to the Modal
+                        user={user}         // Pass the logged-in user to the Modal
+                        onClose={() => setModalVisible(false)} // Close modal handler
                         onConfirm={(reservationDetails) => {
-                            dispatch(createReservation());
-                            setModalVisible(false); // Close modal on success
+                            console.log('Reservation Details (received from Modal):', reservationDetails); // Debugging log
+
+                            // Dispatch the createReservation action with reservation details
+                            dispatch(createReservation(reservationDetails));
+
+                            // Close the modal
+                            setModalVisible(false);
+                            console.log('Selected Ride:', selectedRide);
+                            console.log('User:', user);
+
                         }}
 
                     />
@@ -115,6 +135,8 @@ const Home =()=>{
                         onClick={() => setModalVisible(false)}
                         className="absolute top-2 right-2 text-white bg-red-500 rounded-full px-3 py-1 hover:bg-red-600">X</button>
                 </div>
+
+
             )}
         </div>
     );

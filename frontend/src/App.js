@@ -9,6 +9,7 @@ import Navbar from "./Components/Navbar"
 import Home from "./Components/Home"
 import Error from "./Components/Error"
 import Footer from "./Components/Footer"
+import Profile from "./Components/Profile"
 const App = () => (
     <div>
         <Navbar/>
@@ -22,7 +23,7 @@ const App = () => (
                 <Route path="/ridesMap" element={<RidesMap/>}/>
                 <Route path="/Home" element={<Home/>}/>
                 <Route path="/error" element={<Error/>}/>
-
+                <Route path="/profile" element={<Profile/>}/>
             </Routes>
         </BrowserRouter>
     <Footer/>
