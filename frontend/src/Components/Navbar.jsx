@@ -1,16 +1,65 @@
-import logo from "../assests/logo.png"
+import logo from "../assests/logo.png";
 import { Menu, X } from "lucide-react";
-import {useState} from "react";
+import { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import {logout} from "../Store/Slices/authSlice";
 
-const Navbar =() =>{
-    const [mobileDrawerOpen, setMobileDrawerOpen]=useState(false);
-    const toggleNavbar = ()=>{
-        setMobileDrawerOpen(!mobileDrawerOpen)
-    }
-    const navLinks = (
-        <ul className="flex flex-col lg:flex-row lg:space-x-12 lg:ml-14 space-y-4 lg:space-y-0 text-center font-semibold p-2 m-1 ">
+const Navbar = () => {
+    const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+    const { isAuthenticated, user } = useSelector((state) => state.auth); // Access authentication state
+    const dispatch = useDispatch();
+
+    const toggleNavbar = () => {
+        setMobileDrawerOpen(!mobileDrawerOpen);
+    };
+
+    const handleLogout = () => {
+        dispatch(logout());
+    };
+
+    const loggedInLinks = (
+        <>
             <li>
-                <a href="Home" className="hover:text-orange-400 no-underline">Home</a>
+                <a href="/frontend/src/Pages/Profile/Profile" className="hover:text-orange-400 no-underline">
+                    Profile
+                </a>
+            </li>
+            <li>
+                <a href="/dashboard" className="hover:text-orange-400 no-underline">
+                    Dashboard
+                </a>
+            </li>
+            <li>
+                <button
+                    onClick={handleLogout}
+                    className="bg-red-600 text-white py-2 px-3 rounded-md font-semibold hover:bg-red-700 transition duration-200">
+                    Logout
+                </button>
+            </li>
+        </>
+    );
+
+    const loggedOutLinks = (
+        <>
+            <li>
+                <a href="/signin" className="bg-blue-600 text-white py-2 px-3 rounded-md font-semibold hover:bg-blue-700 transition duration-200 no-underline">
+                    Sign In
+                </a>
+            </li>
+            <li>
+                <a href="/signup" className="text-white bg-gradient-to-r from-orange-300 to-orange-600 py-2 px-3 rounded-md font-semibold hover:bg-orange-700 transition duration-200 no-underline">
+                    Create an account
+                </a>
+            </li>
+        </>
+    );
+
+    const navLinks = (
+        <ul className="flex flex-col lg:flex-row lg:space-x-12 lg:ml-14 space-y-4 lg:space-y-0 text-center font-semibold p-2 m-1">
+            <li>
+                <a href="/frontend/src/Pages/Home/Home" className="hover:text-orange-400 no-underline">
+                    Home
+                </a>
             </li>
             <li>
                 <a href="#about" className="hover:text-orange-400 no-underline">
@@ -22,24 +71,22 @@ const Navbar =() =>{
                     Contact
                 </a>
             </li>
+            {isAuthenticated ? loggedInLinks : loggedOutLinks}
         </ul>
     );
+
     return (
-        <nav className="sticky z-50.py-3.backdrop-blur-lg.border-neutral-700/80 p-2 border-bottom">
+        <nav className="sticky z-50 py-3 backdrop-blur-lg border-neutral-700/80 p-2 border-b">
             <div className="container px-4 mx-auto relative text-sm">
                 <div className="flex justify-between items-center">
                     <div className="flex items-center flex-shrink-0">
-                        <img className="h-10 w-10 mr-0" src={logo} alt="logo"/>
+                        <img className="h-10 w-10 mr-0" src={logo} alt="logo" />
                         <span className="text-2xl tracking-tight">Covy</span>
                     </div>
                     <div className="hidden lg:flex">{navLinks}</div>
-                    <div className="hidden lg:flex justify-center space-x-12 items-center">
-                        <a href="/signin" className=" bg-blue-600 text-white py-2 px-3 border rounded-md hover:bg-blue-700 transition duration-200 focus:ring-blue-300 font-semibold no-underline">Sign In</a>
-                        <a href="/signup" className=" text-white bg-gradient-to-r from-orange-300 to-orange-600 py-2 px-3 rounded-md font-semibold hover:bg-orange-900 transition duration-200 focus:ring-orange-800 no-underline">Create an account</a>
-                    </div>
                     <div className="lg:hidden md:flex flex-col justify-end">
                         <button onClick={toggleNavbar}>
-                            {mobileDrawerOpen ? <X/> : <Menu/>}
+                            {mobileDrawerOpen ? <X /> : <Menu />}
                         </button>
                     </div>
                 </div>
@@ -50,17 +97,11 @@ const Navbar =() =>{
                             className="self-end mb-6 text-xl">
                         </button>
                         {navLinks}
-                        <div className="flex space-x-6 p-6">
-                            <a href="/signin" className="bg-blue-600 text-white py-2 px-3 rounded-lg hover:bg-blue-700 transition duration-200  focus:ring-blue-300 font-semibold no-underline">Sign In</a>
-                            <a href="/signup"
-                               className="text-xs text-white bg-gradient-to-r from-orange-300 to-orange-600 py-2 px-3 rounded-md font-semibold hover:bg-orange-700 transition duration-200 no-underline focus:ring-orange-300" >Create an account</a>
-                        </div>
                     </div>
                 )}
-
             </div>
         </nav>
-
     );
-}
+};
+
 export default Navbar;

@@ -25,7 +25,7 @@ const RidesDisplay = ({ userID, userRole }) => {
                 dispatch(fetchRides());
             }
         }
-    }, [dispatch, userID, userRole,rides]);
+    }, [dispatch, userID, userRole]);
 
     const handleFilterChange = (e) => {
         const { name, value } = e.target;
@@ -149,7 +149,15 @@ const RidesDisplay = ({ userID, userRole }) => {
                         Price {getSortArrow('pricePerSeat')}
                     </th>
                     <th className="px-4 py-2">Restrictions</th>
-                    <th className="px-4 py-2">Actions</th>
+                    {
+                        userRole === "RIDER" && (
+                            <>
+                                <th className="px-4 py-2">Actions</th>
+                            </>
+                        )
+                    }
+
+
                 </tr>
                 </thead>
                 <tbody>
@@ -162,21 +170,26 @@ const RidesDisplay = ({ userID, userRole }) => {
                         <td className="px-4 py-2">${ride.pricePerSeat}</td>
                         <td className="px-4 py-2">{ride.restrictions || "None"}</td>
                         <td className="px-4 py-2 flex space-x-2">
-                            <button
-                                onClick={() => handleEditClick(ride)}
-                                className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600"
-                            >
-                                Edit
-                            </button>
-                            <button
-                                onClick={() => handleDelete(ride.idRide)}
-                                className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
-                            >
-                                Delete
-                            </button>
-                        </td>
+                            {userRole === "RIDER" && (
+                                <>
+                                    <button
+                                    onClick={() => handleEditClick(ride)}
+                                    className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600"
+                                    >
+                                        Edit
+                                    </button>
+                                        <button
+                                        onClick={() => handleDelete(ride.idRide)}
+                                    className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+                                    >
+                                        Delete
+                                    </button>
+                                </>
+                        )}
+
+                    </td>
                     </tr>
-                ))}
+                    ))}
                 </tbody>
             </table>
 

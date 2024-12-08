@@ -6,10 +6,10 @@ import Dashboard from "./Pages/Rides/Dashboard";
 import RidesMap from "./Pages/Rides/RidesMap";
 import AddRideForm from "./Components/AddRideForm";
 import Navbar from "./Components/Navbar"
-import Home from "./Components/Home"
-import Error from "./Components/Error"
+import Home from "./Pages/Home/Home"
+import Error from "./Pages/Error/Error"
 import Footer from "./Components/Footer"
-import Profile from "./Components/Profile"
+import PrivateRoute from "./Pages/Auth/PrivateRoute";
 const App = () => (
     <div>
         <Navbar/>
@@ -18,12 +18,12 @@ const App = () => (
                 <Route path="/" element={<SignIn/>}/>
                 <Route path="/signup" element={<SignUp/>}/>
                 <Route path="/signin" element={<SignIn/>}/>
-                <Route path="/dashboard" element={<Dashboard/>}/>
-                <Route path="/createRide" element={<AddRideForm/>}/>
-                <Route path="/ridesMap" element={<RidesMap/>}/>
-                <Route path="/Home" element={<Home/>}/>
+                <Route path="/dashboard" element={<PrivateRoute children={<Dashboard/>}/>}/>
+                <Route path="/createRide" element={<PrivateRoute children={<AddRideForm/>}/>}/>
+                <Route path="/ridesMap" element={ <PrivateRoute children={<RidesMap/>}/>}/>
+                <Route path="/home" element={<Home/>}/>
                 <Route path="/error" element={<Error/>}/>
-                <Route path="/profile" element={<Profile/>}/>
+
             </Routes>
         </BrowserRouter>
     <Footer/>

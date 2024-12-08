@@ -1,14 +1,13 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import { useDispatch } from "react-redux";
 import { addRide } from "../Store/Slices/ridesSlice";
-import { getCurrentTime} from "../Utils/getCurrentTimeUtil";
+import { getCurrentTime } from "../Utils/getCurrentTimeUtil";
 
-const AddRideForm = ({ userID }) => {
+const AddRideForm = ({ userID, coordsNames }) => {
     const dispatch = useDispatch();
-
     const [newRide, setNewRide] = useState({
-        departureLocation: "",
-        destination: "",
+        departureLocation: "" ,
+        destination: "" ,
         departureDateTime: "",
         availableSeats: "",
         pricePerSeat: "",
@@ -17,6 +16,14 @@ const AddRideForm = ({ userID }) => {
         updatedAt: getCurrentTime(),
         driverId: userID,
     });
+    useEffect(()=>{
+       setNewRide((prevState)=>({
+           ...prevState,
+           departureLocation: coordsNames.depCoordsName,
+           destination: coordsNames.destCoordsName
+       }))
+    },[coordsNames])
+    console.log(newRide);
 
     const [formMessage, setFormMessage] = useState("");
 
@@ -34,8 +41,8 @@ const AddRideForm = ({ userID }) => {
             await dispatch(addRide(newRide)).unwrap();
             setFormMessage("Ride added successfully!");
             setNewRide({
-                departureLocation: "",
-                destination: "",
+                departureLocation: coordsNames.depCoordsName ,
+                destination: coordsNames.destCoordsName,
                 departureDateTime: "",
                 availableSeats: "",
                 pricePerSeat: "",
@@ -44,6 +51,7 @@ const AddRideForm = ({ userID }) => {
                 updatedAt: getCurrentTime(),
                 driverId: userID,
             });
+            console.log(newRide)
         } catch (error) {
             setFormMessage(`Error adding ride: ${error.message}`);
         }
@@ -65,7 +73,7 @@ const AddRideForm = ({ userID }) => {
                         type="text"
                         id="departureLocation"
                         name="departureLocation"
-                        value={newRide.departureLocation}
+                        value={ coordsNames.depCoordsName}
                         onChange={handleInputChange}
                         className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                         required
@@ -81,7 +89,7 @@ const AddRideForm = ({ userID }) => {
                         type="text"
                         id="destination"
                         name="destination"
-                        value={newRide.destination}
+                        value={coordsNames.destCoordsName}
                         onChange={handleInputChange}
                         className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                         required
@@ -97,7 +105,7 @@ const AddRideForm = ({ userID }) => {
                         type="datetime-local"
                         id="departureDateTime"
                         name="departureDateTime"
-                        value={newRide.departureDateTime}
+                        value={coordsNames.departureDateTime}
                         onChange={handleInputChange}
                         className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                         required
@@ -159,7 +167,7 @@ const AddRideForm = ({ userID }) => {
                 </button>
             </form>
         </div>
-        )
+    );
 };
 
 export default AddRideForm;

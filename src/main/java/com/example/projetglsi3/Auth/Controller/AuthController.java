@@ -81,6 +81,7 @@ public class AuthController {
             response.put("username", username);
             response.put("role", userPrincipal.getRole().toString());
             response.put("userId", userPrincipal.getId().toString());
+            response.put("email", userPrincipal.getEmail());
             System.out.println(response);
             return ResponseEntity.ok(response);
         } catch (Exception e) {

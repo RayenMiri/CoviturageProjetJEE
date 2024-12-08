@@ -27,7 +27,7 @@ const Dashboard = () => {
             </button>
             <RidesDisplay userID={userID} userRole={userRole}/>
             {userRole === "RIDER" &&(
-                <AddRideForm userID={userID}/>
+                <AddRideForm userID={userID} coordsNames={{}}/>
             )}
         </div>
     );

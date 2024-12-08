@@ -21,7 +21,7 @@ public class Reservation {
     @Enumerated(EnumType.STRING)
     private status status;
     public enum status {
-        confirmed, cancelled
+        confirmed, cancelled,finished
     }
 
     private LocalDateTime createdAt;

@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchRides } from '../Store/Slices/ridesSlice';
-import { createReservation } from '../Store/Slices/reservationSlice';
+import { fetchRides } from '../../Store/Slices/ridesSlice';
+import { createReservation } from '../../Store/Slices/reservationSlice';
 import {Link, useNavigate} from "react-router-dom";
 import {useState} from "react";
-import Modal from "./Modal"
-import {getCurrentTime} from "../Utils/getCurrentTimeUtil";
+import Modal from "../../Components/Modal"
+import {getCurrentTime} from "../../Utils/getCurrentTimeUtil";
 
 const Home =()=>{
     const dispatch = useDispatch();
