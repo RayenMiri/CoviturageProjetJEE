@@ -39,12 +39,12 @@ const SignIn = () => {
 
         try {
             const data = await loginUser({ username, password });
-
             if (data) {
                 dispatch(
                     loginSuccess({
                         token: data.token,
                         username: data.username,
+                        email: data.email,
                         role:data.role,
                     })
                 );
