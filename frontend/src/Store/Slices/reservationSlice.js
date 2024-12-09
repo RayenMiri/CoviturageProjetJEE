@@ -1,17 +1,16 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import {createReservationAPI, fetchReservationByIdAPI} from "../Services/reservationService";
-import { cancelReservationAPI } from "../Services/reservationService";
-import {fetchRides} from "./ridesSlice";
+import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
+import {cancelReservationAPI, createReservationAPI, fetchReservationByIdAPI} from "../Services/reservationService";
+
 const initialState = {
     reservations: [],
     loading: false,
     error: null,
 };
 export const fetchReservationById = createAsyncThunk(
-    'reservation/History',
-    async (id, { rejectWithValue }) => {
+    'reservation//getReservation',
+    async (idUser, { rejectWithValue }) => {
         try {
-            return await fetchReservationByIdAPI(id);
+            return await fetchReservationByIdAPI(idUser);
         } catch (error) {
             return rejectWithValue(error.message);
         }
@@ -19,10 +18,12 @@ export const fetchReservationById = createAsyncThunk(
 );
 export const cancelReservation = createAsyncThunk(
     'reservation/cancelReservation',
-    async (idRes, { rejectWithValue }) => {
+    async ({idRide,idUser}, { rejectWithValue }) => { // Accept an object with idRide and idUser
         try {
-            const message = await cancelReservationAPI(idRes);
-            return message; // Return the success message
+             // Pass both parameters to the API
+            console.log("Cancelling reservation with ID:", idRide, idUser);
+
+            return await cancelReservationAPI(idRide, idUser); // Return the success message
         } catch (error) {
             return rejectWithValue(error); // Reject with the error message
         }
@@ -75,10 +76,12 @@ const reservationSlice = createSlice({
             state.successMessage = null;
         })
             .addCase(cancelReservation.fulfilled, (state, action) => {
-                state.loading = false;
-                state.successMessage = action.payload; // Use the success message from the API
+                state.reservations = state.reservations.filter(
+                    (res) => res.ride?.idRide !== action.payload.idRide
+                );
             })
-            .addCase(cancelReservation.rejected, (state, action) => {
+
+    .addCase(cancelReservation.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload; // Display the error message
             });

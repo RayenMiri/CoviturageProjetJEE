@@ -33,11 +33,10 @@ public class ReservationController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Réservation non trouvée");
     }
 }
-    @GetMapping("/History/{IdUser}")
-    public ResponseEntity<?> consultHistory(@PathVariable Long IdUser){
-       return resService.consultHistory(IdUser);
 
-    }
-
+@GetMapping("/getReservation/{IdUser}")
+public ResponseEntity<?> getReservationByUser(@PathVariable Long IdUser){
+    return resService.getReservationByUser(IdUser);
+}
 
 }

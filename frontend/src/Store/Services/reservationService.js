@@ -1,15 +1,15 @@
 const BASE_URL = 'http://localhost:8083/api/reservation';
-export const fetchReservationByIdAPI = async (id) => {
-    const response = await fetch(`${BASE_URL}/History/{IdUser}/${id}`);
+export const fetchReservationByIdAPI = async (idUser) => {
+    const response = await fetch(`${BASE_URL}/getReservation/${idUser}`);
     if (!response.ok) {
         throw new Error('Failed to fetch reservation by ID');
     }
     return response.json();
 };
-export const cancelReservationAPI = async(idRes)=>
+export const cancelReservationAPI = async(idRide,idUser)=>
 {
     try {
-        const response = await fetch(`${BASE_URL}/cancelReservation/${idRes}`, {
+        const response = await fetch(`${BASE_URL}/cancelReservation/${idRide}/${idUser}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -20,13 +20,13 @@ export const cancelReservationAPI = async(idRes)=>
             const errorMessage = await response.text();
             throw new Error(errorMessage || 'Failed to cancel reservation');
         }
-
-        const message = await response.text(); // Assuming the API returns plain text
-        return message;
+        const mes = await response.text(); // Assuming the API returns plain text
+        return mes;
     } catch (error) {
-        throw error.message || 'Error cancelling reservation';
+        throw error.mes || 'Error cancelling reservation';
     }
 };
+
 export const createReservationAPI = async (reservationDetails) => {
     try {
         console.log('Received reservation details:', reservationDetails);  // Debugging log

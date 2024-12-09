@@ -13,7 +13,7 @@ const Home =()=>{
     const [isModalVisible, setModalVisible] = useState(false);
     const [selectedRide, setSelectedRide] = useState(null);
     const [selectedReservation, setSelectedReservation] = useState(null);
-    const { reservation = []} = useSelector((state) => state.reservation);
+    const { reservations = []} = useSelector((state) => state.reservation);
     // Fetch rides when the component mounts
     const [newReservation, setNewReservation] = useState({
         idRide: "",
@@ -34,29 +34,73 @@ const Home =()=>{
     if (!user || user.role !== "PASSENGER") {
         navigate('/error');
         return null;}
+
     const handleReserveClick = (ride) => {
-        console.log("Ride Details:", JSON.stringify(ride)); // Debug log
+        console.log("Ride Details:", ride);
         setSelectedRide(ride);
-        setNewReservation((prev) =>({
+        setNewReservation((prev) => ({
             ...prev,
-            idRide: ride.idRide, // Ensure idRide exists on ride
-            idUser: userID,     // Set idUser from the user object
+            idRide: ride.idRide,
+            idUser: userID,
         }));
         setModalVisible(true);
+
+        // Now dispatch the createReservation action with the updated reservation state
+        dispatch(createReservation(newReservation)).then((response) => {
+            if (response.meta.requestStatus === "fulfilled") {
+                console.log("Reservation created successfully:", response.payload);
+                // Fetch updated reservations to ensure frontend reflects changes
+                dispatch(fetchReservationById(userID));
+            } else {
+                console.error("Failed to create reservation:", response.payload);
+            }
+        });
     };
 
-    const handleCancelClick = (reservation) => {
-        console.log("Reservation Details:", JSON.stringify(reservation)); // Debug log
-        setSelectedReservation(reservation); // Set the selected reservation
-        dispatch(cancelReservation(reservation.idReservation)) // Dispatch the cancellation action
-            .then((response) => {
-                if (response.meta.requestStatus === "fulfilled") {
-                    console.log("Reservation canceled successfully:", response.payload);
-                } else {
-                    console.error("Failed to cancel reservation:", response.payload);
-                }
-            });
+
+    const handleCancelClick = (ride) => {
+        console.log("Selected Ride ID: ", ride.idRide);
+        console.log("Current User ID: ", userID);
+
+        // Log all reservations
+        reservations.forEach((reservation) => {
+            console.log("Reservation Details:");
+            console.log("  - Reservation ID:", reservation.idReservation);
+            console.log("  - Ride ID:", reservation.ride?.idRide);
+            console.log("  - User ID:", reservation.user?.id);
+        });
+
+        // Find the reservation that matches the selected ride and current user
+        const reservationToCancel = reservations.find((reservation) => {
+            const rideMatch = reservation.ride?.idRide === ride.idRide;
+            const userMatch = String(reservation.user?.id) === String(userID); // Convert both to strings
+
+            console.log(`Checking reservation with ID: ${reservation.idReservation}`);
+            console.log(`Ride Match: ${rideMatch}, User Match: ${userMatch}`);
+            console.log(`Reservation User ID: ${reservation.user?.id}, Current User ID: ${userID}`);
+
+            return rideMatch && userMatch;
+        });
+
+
+        if (reservationToCancel) {
+            console.log("Reservation to Cancel Found:", reservationToCancel);
+            dispatch(
+                cancelReservation({
+                    idRide: reservationToCancel.ride?.idRide,
+                    idUser: reservationToCancel.user?.id
+                })
+            );
+
+
+        } else {
+            console.error("Reservation not found for this ride.");
+            alert("No reservation found for this ride.");
+        }
     };
+
+
+
     return (
         <div className="homepage">
             {loading && <p>Loading rides...</p>}
@@ -117,7 +161,7 @@ const Home =()=>{
                                     </button>
 
                                     <button
-                                        onClick={() => handleCancelClick(reservation)} // Open the modal
+                                        onClick={() => handleCancelClick(ride)} // Pass the ride object here
                                         className="sm:w-auto lg:w-auto my-2 border rounded-md py-2 px-4 text-center bg-red-600 text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-indigo-700 focus:ring-opacity-50 text-sm">
                                         Cancel
                                     </button>
