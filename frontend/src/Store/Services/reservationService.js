@@ -1,5 +1,32 @@
 const BASE_URL = 'http://localhost:8083/api/reservation';
+export const fetchReservationByIdAPI = async (id) => {
+    const response = await fetch(`${BASE_URL}/History/{IdUser}/${id}`);
+    if (!response.ok) {
+        throw new Error('Failed to fetch reservation by ID');
+    }
+    return response.json();
+};
+export const cancelReservationAPI = async(idRes)=>
+{
+    try {
+        const response = await fetch(`${BASE_URL}/cancelReservation/${idRes}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
 
+        if (!response.ok) {
+            const errorMessage = await response.text();
+            throw new Error(errorMessage || 'Failed to cancel reservation');
+        }
+
+        const message = await response.text(); // Assuming the API returns plain text
+        return message;
+    } catch (error) {
+        throw error.message || 'Error cancelling reservation';
+    }
+};
 export const createReservationAPI = async (reservationDetails) => {
     try {
         console.log('Received reservation details:', reservationDetails);  // Debugging log
@@ -8,11 +35,6 @@ export const createReservationAPI = async (reservationDetails) => {
         if (!reservationDetails.idUser || !reservationDetails.idRide || !reservationDetails.nbOfSeats) {
             return { error: 'Missing required reservation details' }; // Return error in a structured format
         }
-        // const CreateResBody  =  {
-        //     idUser:reservationDetails.idUser,
-        //     idRide:reservationDetails.idRide,
-        //     nbOfSeats :reservationDetails.nbOfSeats
-        // }
         const response = await fetch(`${BASE_URL}/createReservation/${reservationDetails.idUser}/${reservationDetails.idRide}/${reservationDetails.nbOfSeats}`, {
             method: 'POST',
             headers: {
@@ -33,17 +55,3 @@ export const createReservationAPI = async (reservationDetails) => {
         return { error: error.message || 'An unexpected error occurred' };  // Return error details in a structured format
     }
 };
-// export const createReservationAPI = async ({ idUser, idRide, nbSeats }) => {
-//     console.log('Reservation Details:', { idUser, idRide, nbSeats });
-//     const response = await fetch(
-//         `${BASE_URL}/createReservation/${idUser}/${idRide}/${nbSeats}`,
-//         {
-//             method: 'POST',
-//             headers: { 'Content-Type': 'application/json' },
-//         }
-//     );
-//     if (!response.ok) {
-//         throw new Error('Failed to create reservation');
-//     }
-//     return response.json();
-// };

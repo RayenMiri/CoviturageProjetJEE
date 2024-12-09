@@ -10,6 +10,7 @@ import Home from "./Pages/Home/Home"
 import Error from "./Pages/Error/Error"
 import Footer from "./Components/Footer"
 import PrivateRoute from "./Pages/Auth/PrivateRoute";
+import Profile from "./Pages/Profile/Profile"
 const App = () => (
     <div>
         <Navbar/>
@@ -23,6 +24,7 @@ const App = () => (
                 <Route path="/ridesMap" element={ <PrivateRoute children={<RidesMap/>}/>}/>
                 <Route path="/home" element={<Home/>}/>
                 <Route path="/error" element={<Error/>}/>
+                <Route path="/Profile" element={<Profile/>}/>
 
             </Routes>
         </BrowserRouter>

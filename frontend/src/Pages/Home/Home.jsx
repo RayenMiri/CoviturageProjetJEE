@@ -1,23 +1,20 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchRides } from '../../Store/Slices/ridesSlice';
-import { createReservation } from '../../Store/Slices/reservationSlice';
+import { createReservation,fetchReservationById, cancelReservation  } from '../../Store/Slices/reservationSlice';
 import {Link, useNavigate} from "react-router-dom";
 import {useState} from "react";
 import Modal from "../../Components/Modal"
 import {getCurrentTime} from "../../Utils/getCurrentTimeUtil";
-
 const Home =()=>{
     const dispatch = useDispatch();
     // Access rides, loading, and error states from the Redux store
     const { rides, loading, error } = useSelector((state) => state.rides);
     const [isModalVisible, setModalVisible] = useState(false);
     const [selectedRide, setSelectedRide] = useState(null);
+    const [selectedReservation, setSelectedReservation] = useState(null);
+    const { reservation = []} = useSelector((state) => state.reservation);
     // Fetch rides when the component mounts
-
-    useEffect(() => {
-        dispatch(fetchRides());
-    }, [dispatch]);
     const [newReservation, setNewReservation] = useState({
         idRide: "",
         idUser: "",
@@ -28,13 +25,19 @@ const Home =()=>{
     const user = JSON.parse(localStorage.getItem("user"));
     const userID = user.userId;
     const navigate = useNavigate();
+    useEffect(() => {
+        if (userID) {
+            dispatch(fetchRides());
+            dispatch(fetchReservationById(userID));
+        }
+    }, [dispatch, userID]);
     if (!user || user.role !== "PASSENGER") {
         navigate('/error');
         return null;}
     const handleReserveClick = (ride) => {
         console.log("Ride Details:", JSON.stringify(ride)); // Debug log
         setSelectedRide(ride);
-        setNewReservation((prev) => ({
+        setNewReservation((prev) =>({
             ...prev,
             idRide: ride.idRide, // Ensure idRide exists on ride
             idUser: userID,     // Set idUser from the user object
@@ -42,6 +45,18 @@ const Home =()=>{
         setModalVisible(true);
     };
 
+    const handleCancelClick = (reservation) => {
+        console.log("Reservation Details:", JSON.stringify(reservation)); // Debug log
+        setSelectedReservation(reservation); // Set the selected reservation
+        dispatch(cancelReservation(reservation.idReservation)) // Dispatch the cancellation action
+            .then((response) => {
+                if (response.meta.requestStatus === "fulfilled") {
+                    console.log("Reservation canceled successfully:", response.payload);
+                } else {
+                    console.error("Failed to cancel reservation:", response.payload);
+                }
+            });
+    };
     return (
         <div className="homepage">
             {loading && <p>Loading rides...</p>}
@@ -49,6 +64,7 @@ const Home =()=>{
             {!loading && !error && rides.length === 0 && <p>No rides available.</p>}
             <div className="rides-list flex flex-wrap justify-center column-gap-5 row-gap-5">
                 {rides.map((ride) => (
+
                     <div key={ride.idRide}
                          className="bg-white flex justify-center items-center w-full sm:w-11/12 md:w-6/12 lg:w-4/12 p-3">
                         <div
@@ -92,11 +108,20 @@ const Home =()=>{
                                     })}</li>
                                 </ul>
                                 <div className="flex justify-end space-x-4">
+
+
                                     <button
                                         onClick={() => handleReserveClick(ride)} // Open the modal
                                         className="sm:w-auto lg:w-auto my-2 border rounded-md py-2 px-4 text-center bg-indigo-600 text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-700 focus:ring-opacity-50 text-sm">
                                         Reserve
                                     </button>
+
+                                    <button
+                                        onClick={() => handleCancelClick(reservation)} // Open the modal
+                                        className="sm:w-auto lg:w-auto my-2 border rounded-md py-2 px-4 text-center bg-red-600 text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-indigo-700 focus:ring-opacity-50 text-sm">
+                                        Cancel
+                                    </button>
+
                                     <button
                                         className="sm:w-auto lg:w-auto my-2 border rounded-md py-2 px-4 text-center bg-green-600 text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-700 focus:ring-opacity-50 text-sm">
                                         <Link to="/ridesMap" className="block w-full h-full text-white no-underline">
@@ -128,15 +153,10 @@ const Home =()=>{
                             console.log('Selected Ride:', selectedRide);
                             console.log('User:', user);
 
-                        }}
-
-                    />
-                    <button
-                        onClick={() => setModalVisible(false)}
+                        }}/>
+                    <button onClick={() => setModalVisible(false)}
                         className="absolute top-2 right-2 text-white bg-red-500 rounded-full px-3 py-1 hover:bg-red-600">X</button>
                 </div>
-
-
             )}
         </div>
     );
