@@ -10,6 +10,7 @@ import Home from "./Pages/Home/Home"
 import Error from "./Pages/Error/Error"
 import Footer from "./Components/Footer"
 import PrivateRoute from "./Pages/Auth/PrivateRoute";
+import Profile from "./Pages/Profile/Profile"
 import DriverRidesPage from "./Pages/Rides/DriverRidesPage";
 const App = () => (
     <div>
@@ -19,12 +20,13 @@ const App = () => (
                 <Route path="/" element={<SignIn/>}/>
                 <Route path="/signup" element={<SignUp/>}/>
                 <Route path="/signin" element={<SignIn/>}/>
-                <Route path="/home" element={<PrivateRoute children={ <Home/>}/>}/>
                 <Route path="/dashboard" element={<PrivateRoute children={<Dashboard/>}/>}/>
                 <Route path="/createRide" element={<PrivateRoute children={<AddRideForm/>}/>}/>
                 <Route path="/ridesMap" element={ <PrivateRoute children={<RidesMap/>}/>}/>
-                <Route path="/driverRides" element={<PrivateRoute children={<DriverRidesPage/>}/>} />
+                <Route path="/home" element={<Home/>}/>
                 <Route path="/error" element={<Error/>}/>
+                <Route path="/Profile" element={<Profile/>}/>
+                <Route path="/driverRides" element={ <PrivateRoute children={<DriverRidesPage/>}/> }/>
 
             </Routes>
         </BrowserRouter>

@@ -12,11 +12,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -89,4 +87,15 @@ public class AuthController {
             return ResponseEntity.badRequest().body("Invalid credentials");
         }
     }
+    @GetMapping("/users/{userId}")
+    public ResponseEntity<?> loadUserById( @PathVariable Long userId) {
+        try{
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found with id " + userId));
+            return ResponseEntity.ok(UserPrincipal.create(user));
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body("User not found with id " + userId);
+        }
+    }
+
 }

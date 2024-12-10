@@ -6,7 +6,7 @@ const store = configureStore({
     reducer: {
         auth: authReducer,
         rides:rideReducer,
-        reservation:reservationReducer,
+        reservations:reservationReducer,
     },
 
 });

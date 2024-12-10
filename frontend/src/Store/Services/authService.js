@@ -63,3 +63,7 @@ export const signupUser = async (username, email, password, role) => {
     }
 
 }
+
+export const logoutUser = async () => {
+
+}

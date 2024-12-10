@@ -36,6 +36,7 @@ const authSlice = createSlice({
             state.loading = false;
         },
     },
+
 });
 
 export const {

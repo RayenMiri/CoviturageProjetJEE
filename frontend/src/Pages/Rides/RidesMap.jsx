@@ -29,9 +29,9 @@ const fetchCoordinates = async (location) => {
     try {
         const response = await axios.get(`https://photon.komoot.io/api/`, {
             params: {
-                q: `${location} , Tunisia`, // Search query
-                lang: "en", // Language (optional)
-                limit: 1, // Limit results to 1
+                q: `${location} , Tunisia`,
+                lang: "en",
+                limit: 1,
             },
         });
         if (response.data.features && response.data.features.length > 0) {

@@ -165,7 +165,7 @@ const RidesDisplay = ({ userID, userRole }) => {
                         <td className="px-4 py-2">{ride.destination}</td>
                         <td className="px-4 py-2">{new Date(ride.departureDateTime).toLocaleString()}</td>
                         <td className="px-4 py-2">{ride.availableSeats}</td>
-                        <td className="px-4 py-2">${ride.pricePerSeat}</td>
+                        <td className="px-4 py-2">{ride.pricePerSeat} DT </td>
                         <td className="px-4 py-2">{ride.restrictions || "None"}</td>
                         <td className="px-4 py-2 flex space-x-2">
                             {userRole === "RIDER" && (
