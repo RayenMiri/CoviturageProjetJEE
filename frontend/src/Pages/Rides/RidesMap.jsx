@@ -126,7 +126,7 @@ const RidesMap = () => {
     const [depCoordsName, setDepCoordsName] = useState("");
 
     const userID = JSON.parse(localStorage.getItem("user")).userId;
-    const userRole = JSON.parse(localStorage.getItem("user")).userRole;
+    const userRole = JSON.parse(localStorage.getItem("user")).role;
 
     useEffect(() => {
         dispatch(fetchRides());
@@ -199,7 +199,7 @@ const RidesMap = () => {
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             />
             {mapLoaded && <MapBoundsAdjuster coordinates={coordinates} />}
-            <MapClickHandler onMapClick={handleMapClick} />
+            {userRole === "RIDER" &&  <MapClickHandler onMapClick={handleMapClick} />}
             {coordinates.map((coord) => (
                 <React.Fragment key={coord.id}>
                     {coord.departureCoordinates && (

@@ -20,7 +20,7 @@ const Navbar = () => {
     const loggedInLinks = (
         <>
             <li>
-                <a href="/frontend/src/Pages/Profile/Profile" className="hover:text-orange-400 no-underline">
+                <a href="/profil" className="hover:text-orange-400 no-underline">
                     Profile
                 </a>
             </li>
@@ -57,12 +57,12 @@ const Navbar = () => {
     const navLinks = (
         <ul className="flex flex-col lg:flex-row lg:space-x-12 lg:ml-14 space-y-4 lg:space-y-0 text-center font-semibold p-2 m-1">
             <li>
-                <a href="/frontend/src/Pages/Home/Home" className="hover:text-orange-400 no-underline">
+                <a href="/home" className="hover:text-orange-400 no-underline">
                     Home
                 </a>
             </li>
             <li>
-                <a href="#about" className="hover:text-orange-400 no-underline">
+                <a href="/about" className="hover:text-orange-400 no-underline">
                     About
                 </a>
             </li>

@@ -156,8 +156,6 @@ const RidesDisplay = ({ userID, userRole }) => {
                             </>
                         )
                     }
-
-
                 </tr>
                 </thead>
                 <tbody>

@@ -28,9 +28,9 @@ const Home =()=>{
     const user = JSON.parse(localStorage.getItem("user"));
     const userID = user.userId;
     const navigate = useNavigate();
-    if (!user || user.role !== "PASSENGER") {
+    /*if (!user || user.role !== "PASSENGER") {
         navigate('/error');
-        return null;}
+        return null;}*/
     const handleReserveClick = (ride) => {
         console.log("Ride Details:", JSON.stringify(ride)); // Debug log
         setSelectedRide(ride);
