@@ -171,23 +171,23 @@ const RidesDisplay = ({ userID, userRole }) => {
                             {userRole === "RIDER" && (
                                 <>
                                     <button
-                                    onClick={() => handleEditClick(ride)}
-                                    className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600"
+                                        onClick={() => handleEditClick(ride)}
+                                        className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600"
                                     >
                                         Edit
                                     </button>
-                                        <button
+                                    <button
                                         onClick={() => handleDelete(ride.idRide)}
-                                    className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+                                        className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
                                     >
                                         Delete
                                     </button>
                                 </>
-                        )}
+                            )}
 
-                    </td>
+                        </td>
                     </tr>
-                    ))}
+                ))}
                 </tbody>
             </table>
 

@@ -16,10 +16,10 @@ public class Review {
     private Long idRev;
     private int rating;
     private String createdAt;
-    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
-    @JoinColumn(name = "idRide")
+    @OneToOne
+    @JoinColumn(name = "id_ride")
     private Ride ride;
-    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
-    @JoinColumn(name = "id")
+    @OneToOne
+    @JoinColumn(name = "id_reviewed")
     private User user;
 }

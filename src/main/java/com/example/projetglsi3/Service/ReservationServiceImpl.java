@@ -2,7 +2,7 @@ package com.example.projetglsi3.Service;
 import com.example.projetglsi3.Model.Reservation;
 import com.example.projetglsi3.Model.Ride;
 import com.example.projetglsi3.Model.User;
-import com.example.projetglsi3.Repository.ReservationRepo;
+import com.example.projetglsi3.Repository.ReservationRepository;
 import com.example.projetglsi3.Repository.RideRepository;
 import com.example.projetglsi3.Repository.userRepository;
 import lombok.AccessLevel;
@@ -19,8 +19,7 @@ import java.util.*;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Service
 public class ReservationServiceImpl implements ReservationIService {
-    private final RideService rideService;
-    ReservationRepo resRep;
+    ReservationRepository resRep;
     userRepository userRepo;
     RideRepository rideRep;
 
