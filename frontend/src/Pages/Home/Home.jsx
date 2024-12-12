@@ -1,29 +1,33 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchRides } from '../../Store/Slices/ridesSlice';
-import { createReservation,fetchReservationByUserId, cancelReservation  } from '../../Store/Slices/reservationSlice';
+import {
+    createReservation,
+    fetchReservationByUserId,
+    cancelReservation,
+
+} from '../../Store/Slices/reservationSlice';
 import {Link, useNavigate} from "react-router-dom";
 import {useState} from "react";
 import Modal from "../../Components/Modal"
 import {getCurrentTime} from "../../Utils/getCurrentTimeUtil";
+import {createReview} from "../../Store/Slices/ReviewSlice";
 const Home =()=>{
     const dispatch = useDispatch();
-    // Access rides, loading, and error states from the Redux store
     const { rides, loading, error } = useSelector((state) => state.rides);
     const [isModalVisible, setModalVisible] = useState(false);
     const [selectedRide, setSelectedRide] = useState(null);
-    const [selectedReservation, setSelectedReservation] = useState(null);
-    const { reservations = [],error1 ,loading1} = useSelector((state) => state.reservations);
-    // Fetch rides when the component mounts
+    const {reservations ,error1 ,loading1} = useSelector((state) => state.reservations);
+    const user = JSON.parse(localStorage.getItem("user"));
+    const userID = user.userId;
     const [newReservation, setNewReservation] = useState({
-        idRide: "",
-        idUser: "",
-        nbOfSeats: 1,// Default to 1 seat
+        idRide:selectedRide,
+        idUser: parseInt(userID),
+        nbOfSeats: 1,
         createdAt: getCurrentTime(),
         updatedAt: getCurrentTime(),
     })
-    const user = JSON.parse(localStorage.getItem("user"));
-    const userID = user.userId;
+
     const navigate = useNavigate();
     useEffect(() => {
         if (userID) {
@@ -31,27 +35,35 @@ const Home =()=>{
             dispatch(fetchReservationByUserId(userID));
         }
     }, [dispatch, userID]);
-    console.log("User:", user);
-    console.log("User ID:", user.role);
-    /*if (!user || user.role !== "PASSENGER") {
-        navigate('/error');
-        return null;}
-    */
+
     const handleReserveClick = (ride) => {
-        console.log("Ride Details:", ride);
-        setSelectedRide(ride);
-        setNewReservation((prev) => ({
-            ...prev,
-            idRide: ride.idRide,
+        // Log the ride to ensure it's correctly passed
+        console.log("Selected Ride:", ride);
+
+        // Directly use the ride parameter to set new reservation
+        setNewReservation({
+            idRide: ride.idRide, // Use the passed ride directly
             idUser: userID,
-        }));
+            nbOfSeats: 1,
+            createdAt: getCurrentTime(),
+            updatedAt: getCurrentTime(),
+        });
+
+        // Set modal visibility
         setModalVisible(true);
 
-        // Now dispatch the createReservation action with the updated reservation state
-        dispatch(createReservation(newReservation)).then((response) => {
+        // Dispatch the createReservation action immediately
+        const reservationDetails = {
+            idRide: ride.idRide, // Ensure this matches the ride
+            idUser: userID,
+            nbOfSeats: 1,
+            createdAt: getCurrentTime(),
+            updatedAt: getCurrentTime(),
+        };
+        console.log("Dispatching reservation:", reservationDetails);
+
+        dispatch(createReservation(reservationDetails)).then((response) => {
             if (response.meta.requestStatus === "fulfilled") {
-                console.log("Reservation created successfully:", response.payload);
-                // Fetch updated reservations to ensure frontend reflects changes
                 dispatch(fetchReservationByUserId(userID));
             } else {
                 console.error("Failed to create reservation:", response.payload);
@@ -60,11 +72,9 @@ const Home =()=>{
     };
 
 
-    const handleCancelClick = (ride) => {
-        console.log("Selected Ride ID: ", ride.idRide);
-        console.log("Current User ID: ", userID);
 
-        // Log all reservations
+    const handleCancelClick = (ride) => {
+
         reservations.forEach((reservation) => {
             console.log("Reservation Details:");
             console.log("  - Reservation ID:", reservation.idReservation);
@@ -72,21 +82,14 @@ const Home =()=>{
             console.log("  - User ID:", reservation.user?.id);
         });
 
-        // Find the reservation that matches the selected ride and current user
         const reservationToCancel = reservations.find((reservation) => {
             const rideMatch = reservation.ride?.idRide === ride.idRide;
             const userMatch = String(reservation.user?.id) === String(userID); // Convert both to strings
-
-            console.log(`Checking reservation with ID: ${reservation.idReservation}`);
-            console.log(`Ride Match: ${rideMatch}, User Match: ${userMatch}`);
-            console.log(`Reservation User ID: ${reservation.user?.id}, Current User ID: ${userID}`);
-
             return rideMatch && userMatch;
         });
 
 
         if (reservationToCancel) {
-            console.log("Reservation to Cancel Found:", reservationToCancel);
             dispatch(
                 cancelReservation({
                     idRide: reservationToCancel.ride?.idRide,
@@ -94,13 +97,40 @@ const Home =()=>{
                 })
             );
 
-
         } else {
-            console.error("Reservation not found for this ride.");
             alert("No reservation found for this ride.");
         }
     };
 
+    const handleCreateReview = (ride) => {
+        const review = {
+            rideId: ride.idRide,
+            userId: userID,
+            rating: 5
+        };
+
+        // Dispatch the thunk to submit the review
+        dispatch(createReview(review))
+            .then((response) => {
+                if (response.meta.requestStatus === "fulfilled") {
+                    console.log("Review submitted successfully:", response.payload);
+                    alert("Review submitted successfully!");
+                } else {
+                    console.error("Failed to submit review:", response.payload);
+                    alert("Failed to submit review.");
+                }
+            })
+            .catch((error) => {
+                console.error("Error while submitting review:", error.message());
+            });
+    };
+
+    const isBooked = (idRide) => {
+        return reservations.some((reservation) => {
+            console.log("Checking reservation for ride:", reservation.ride.idRide, "against", idRide);
+            return reservation.ride.idRide === idRide && reservation.status === "confirmed";
+        });
+    };
 
 
     return (
@@ -111,17 +141,19 @@ const Home =()=>{
             <div className="rides-list flex flex-wrap justify-center column-gap-5 row-gap-5">
                 {rides.map((ride) => (
 
+                    ride.availableSeats>0 &&
                     <div key={ride.idRide}
                          className="bg-white flex justify-center items-center w-full sm:w-11/12 md:w-6/12 lg:w-4/12 p-3">
                         <div
                             className='flex flex-col items-center justify-between bg-white dark:bg-gray-800 shadow-md shadow-gray-300 text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-600 w-full h-auto rounded-xl transition-all ease-in-out duration-500'>
                             <div className='w-full flex items-center justify-between'>
                                 <div className='flex items-center justify-center px-2 md:px-6'>
-                                    <a href={`/Profile/${ride.userId}`}
+                                    <a /*href={`/Profile/${ride.userId}`}*/
                                        className="flex items-center justify-center px-2 md:px-6">
                                         <img
                                             className='w-16 hidden rounded-full ring-2 ring-green-600 shadow-lg shadow-green-600 m-2 md:block'
-                                            src='https://img.freepik.com/free-vector/illustration-user-avatar-icon_53876-5907.jpg?size=626&ext=jpg' alt="User Avatar"/></a>
+                                            src='https://img.freepik.com/free-vector/illustration-user-avatar-icon_53876-5907.jpg?size=626&ext=jpg' alt="User Avatar"/>
+                                    </a>
                                     <div className='text-left'>
                                         <h4 className='text-lg md:text-2xl lg:text-3xl ease-in-out duration-1000 uppercase'>
                                             <span className='text-red-500'>{ride.title}</span>
@@ -144,9 +176,11 @@ const Home =()=>{
                                         className="font-bold">Available Seats:</span> {ride.availableSeats}</li>
                                     <li className="mb-2"><span
                                         className="font-bold">Price Per Seat:</span> {ride.pricePerSeat}</li>
-                                    <li className="mb-2"><span className="font-bold">Restrictions:</span> {ride.restrictions}</li>
                                     <li className="mb-2"><span
-                                        className="font-bold">Date:</span> {new Date(ride.departureDateTime).toLocaleDateString()}</li>
+                                        className="font-bold">Restrictions:</span> {ride.restrictions}</li>
+                                    <li className="mb-2"><span
+                                        className="font-bold">Date:</span> {new Date(ride.departureDateTime).toLocaleDateString()}
+                                    </li>
                                     <li className="mb-2"><span
                                         className="font-bold">Time:</span> {new Date(ride.departureDateTime).toLocaleTimeString([], {
                                         hour: '2-digit',
@@ -154,31 +188,43 @@ const Home =()=>{
                                     })}</li>
                                 </ul>
                                 <div className="flex justify-end space-x-4">
+                                    {isBooked(ride.idRide) ? (
+                                        <>
+                                            <button
+                                                onClick={() => handleCreateReview(ride)} // Define a handler for this action
+                                                className="sm:w-auto lg:w-auto my-2 border rounded-md py-2 px-4 text-center bg-yellow-500 text-white hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:ring-opacity-50 text-sm">
+                                                Extra Action
+                                            </button>
+                                            <button
+                                                onClick={() => handleCancelClick(ride)}
+                                                className="sm:w-auto lg:w-auto my-2 border rounded-md py-2 px-4 text-center bg-red-600 text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-indigo-700 focus:ring-opacity-50 text-sm">
+                                                Cancel
+                                            </button>
+                                        </>
+
+
+                                    ) : (
+                                        <button
+                                            onClick={() => handleReserveClick(ride)}
+                                            className="sm:w-auto lg:w-auto my-2 border rounded-md py-2 px-4 text-center bg-indigo-600 text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-700 focus:ring-opacity-50 text-sm">
+                                            Reserve
+                                        </button>
+                                    )}
+
+
 
 
                                     <button
-                                        onClick={() => handleReserveClick(ride)} // Open the modal
-                                        className="sm:w-auto lg:w-auto my-2 border rounded-md py-2 px-4 text-center bg-indigo-600 text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-700 focus:ring-opacity-50 text-sm">
-                                        Reserve
-                                    </button>
-
-                                    <button
-                                        onClick={() => handleCancelClick(ride)} // Pass the ride object here
-                                        className="sm:w-auto lg:w-auto my-2 border rounded-md py-2 px-4 text-center bg-red-600 text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-indigo-700 focus:ring-opacity-50 text-sm">
-                                        Cancel
-                                    </button>
-
-                                    <button
-                                        className="sm:w-auto lg:w-auto my-2 border rounded-md py-2 px-4 text-center bg-green-600 text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-700 focus:ring-opacity-50 text-sm">
-                                        <Link to="/ridesMap" className="block w-full h-full text-white no-underline">
-                                            View in Map
-                                        </Link>
-                                    </button>
-                                </div>
+                                    className="sm:w-auto lg:w-auto my-2 border rounded-md py-2 px-4 text-center bg-green-600 text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-700 focus:ring-opacity-50 text-sm">
+                                    <Link to="/ridesMap" className="block w-full h-full text-white no-underline">
+                                        View in Map
+                                    </Link>
+                                </button>
                             </div>
                         </div>
                     </div>
-                ))}
+                    </div>
+                    ))}
             </div>
 
             {isModalVisible && (

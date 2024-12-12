@@ -28,7 +28,7 @@ public class ReservationController {
             @PathVariable Long idRide,
             @PathVariable Long idUser) {
         try {
-            return resService.cancelReservation(idRide, idUser); // Directly return the response from service
+            return resService.cancelReservation(idRide, idUser);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Reservation not found");
         }
@@ -37,11 +37,6 @@ public class ReservationController {
     @GetMapping("/getReservationByUserId/{IdUser}")
     public ResponseEntity<?> getReservationByUser(@PathVariable Long IdUser){
         return resService.getReservationByUser(IdUser);
-    }
-
-    @GetMapping("/getReservationByUserId/{resId}")
-    public ResponseEntity<?> getReservationById(@PathVariable Long resId){
-        return resService.getReservationById(resId);
     }
 
     @GetMapping("/getReservationByRideId/{rideId}")

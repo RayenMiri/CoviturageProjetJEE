@@ -15,6 +15,7 @@ export const fetchReservationByUserId = createAsyncThunk(
     'reservation/getReservationByUserId',
     async (idUser, { rejectWithValue }) => {
         try {
+            console.log(await fetchReservationByUserIdAPI(idUser));
             return await fetchReservationByUserIdAPI(idUser);
         } catch (error) {
             return rejectWithValue(error.message);
@@ -61,6 +62,7 @@ export const fetchReservationByRideId = createAsyncThunk(
     'reservation/getReservationByRideId',
     async (rideId,{rejectWithValue}) => {
         try{
+            console.log(await fetchReservationByRideIdAPI(rideId));
             return await fetchReservationByRideIdAPI(rideId);
         }catch (error) {
             return rejectWithValue(error.message);

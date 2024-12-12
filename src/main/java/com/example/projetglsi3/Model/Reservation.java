@@ -26,11 +26,10 @@ public class Reservation {
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    // One ride can have multiple reservations ,One user can make multiple reservations
     @ManyToOne
     @JoinColumn(name = "id_ride")
     private Ride ride;
     @ManyToOne
-    @JoinColumn(name = "id",unique = true)
+    @JoinColumn(name = "id")
     private User user;
 }

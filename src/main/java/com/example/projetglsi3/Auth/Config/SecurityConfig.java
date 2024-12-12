@@ -48,6 +48,7 @@ public class SecurityConfig {
                                 .requestMatchers("/api/auth/**").permitAll()
                                 .requestMatchers("/api/rides/**").permitAll()
                                 .requestMatchers("/api/reservation/**").permitAll()
+                                .requestMatchers("/api/reviews/**").permitAll()
                                 .anyRequest().authenticated()
                 );
         http.addFilterBefore(JWTAuthentificationFilter(),UsernamePasswordAuthenticationFilter.class);

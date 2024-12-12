@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -67,10 +68,20 @@ public class ReservationServiceImpl implements ReservationIService {
             if (resList.isEmpty()) {
                 throw new ReservationNotFoundException("No reservation found for this ride and user.");
             }
-            if (resList.size() > 1) {
-                throw new ReservationNotFoundException("Multiple reservations found for this ride and user.");
-            }
             Reservation res = resList.get(0);
+            /*if (resList.size() > 1) {
+                throw new ReservationNotFoundException("Multiple reservations found for this ride and user.");
+            }*/
+            List<Reservation> confirmedReservations = resList.stream()
+                    .filter(reservation -> reservation.getStatus() == Reservation.status.confirmed)
+                    .toList();
+
+            if (!confirmedReservations.isEmpty()) {
+                res = confirmedReservations.get(0); // Take the first confirmed reservation from the filtered list
+            } else {
+                res = resList.get(0); // Fallback to the first available reservation
+            }
+
             int nbReservedSeats = res.getNbOfSeats();
             // Update reservation status and timestamp
             res.setStatus(Reservation.status.cancelled);
@@ -103,7 +114,7 @@ public class ReservationServiceImpl implements ReservationIService {
 
             // Check if the user already has a reservation for this ride
             List<Reservation> existingReservations = resRep.findByRideIdRideAndUserId(idRide, idUser);
-            if (!existingReservations.isEmpty()) {
+            if (!existingReservations.isEmpty() && existingReservations.get(0).getStatus() == Reservation.status.confirmed) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body("User already has a reservation for this ride.");
             }
