@@ -27,7 +27,7 @@ const Modal = ({ isVisible, ride, user, onClose, onConfirm }) => {
         };
 
         console.log('Reservation Details:', reservationDetails);  // Debugging log to check data before dispatch
-        dispatch(createReservation(reservationDetails));
+        //dispatch(createReservation(reservationDetails));
         onConfirm(reservationDetails);
     };
     return(

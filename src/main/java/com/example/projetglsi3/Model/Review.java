@@ -20,6 +20,6 @@ public class Review {
     @JoinColumn(name = "id_ride")
     private Ride ride;
     @OneToOne
-    @JoinColumn(name = "id_reviewed")
+    @JoinColumn(name = "id_reviewer")
     private User user;
 }

@@ -8,4 +8,5 @@ public interface ReviewService {
     ResponseEntity<?> createReview(Review review);
     ResponseEntity<?> getReviewByIdReviewed(Long idUser);
     ResponseEntity<?> updateReview(Review review);
+    ResponseEntity<?> getReviewsByIdRide(Long idRide);
 }

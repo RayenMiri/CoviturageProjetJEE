@@ -1,6 +1,11 @@
 // src/store/slices/reviewSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import {createReviewAPI, getReviewByIdReviewedAPI, updateReviewAPI} from "../Services/ReviewService";
+import {
+    createReviewAPI,
+    getReviewByIdReviewedAPI,
+    getReviewByIdRideAPI,
+    updateReviewAPI
+} from "../Services/ReviewService";
 
 // Async thunks
 export const createReview = createAsyncThunk(
@@ -28,6 +33,18 @@ export const fetchReviewByUserId = createAsyncThunk(
         }
     }
 );
+
+export const getReviewByIdRide = createAsyncThunk(
+    "reviews/getReviewByIdRide",
+    async (idRide,{rejectWithValue})=>{
+        try {
+            const response = await getReviewByIdRideAPI(idRide);
+            return response.data;
+        }catch (error) {
+            return rejectWithValue(error.response.data);
+        }
+    }
+)
 
 export const updateReview = createAsyncThunk(
     "reviews/updateReview",
@@ -90,7 +107,19 @@ const reviewSlice = createSlice({
             .addCase(updateReview.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
-            });
+            })
+            .addCase(getReviewByIdRide.pending,(state,action)=>{
+                state.loading = true;
+            })
+            .addCase(getReviewByIdRide.fulfilled,(state,action)=>{
+                state.loading = false;
+                state.reviews = action.payload;
+            })
+            .addCase(getReviewByIdRide.rejected,(state,action)=>{
+                state.loading = false;
+                state.error = action.payload;
+            })
+        ;
     },
 });
 

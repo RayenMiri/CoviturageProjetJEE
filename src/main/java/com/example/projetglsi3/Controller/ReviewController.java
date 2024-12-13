@@ -15,12 +15,18 @@ public class ReviewController {
 
     @PostMapping("/createReview")
     public ResponseEntity<?> createReview(@RequestBody Review review) {
+        System.out.println(review);
         return reviewService.createReview(review);
     }
 
     @GetMapping("/getReviewByIdReviewed/{idUser}")
     public ResponseEntity<?> getReviewByIdReviewed(@PathVariable Long idUser) {
         return reviewService.getReviewByIdReviewed(idUser);
+    }
+
+    @GetMapping("/getReviewsByIdRide/{rideId}")
+    public ResponseEntity<?> getReviewsByIdRide(@PathVariable Long rideId) {
+        return reviewService.getReviewsByIdRide(rideId);
     }
 
     @PutMapping("/updateReview")

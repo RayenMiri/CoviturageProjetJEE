@@ -2,39 +2,41 @@ import logo from "../assests/logo.png";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import {logout} from "../Store/Slices/authSlice";
+import { logout } from "../Store/Slices/authSlice";
 
 const Navbar = () => {
     const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
     const { isAuthenticated, user } = useSelector((state) => state.auth);
     const dispatch = useDispatch();
-
     const toggleNavbar = () => {
         setMobileDrawerOpen(!mobileDrawerOpen);
     };
-
     const handleLogout = () => {
         dispatch(logout());
     };
 
     const loggedInLinks = (
         <>
-
             <li>
                 <a href="/Profile" className="hover:text-orange-400 no-underline">
-                    My profile
+                    Profile
                 </a>
             </li>
             <li>
                 <a href="/dashboard" className="hover:text-orange-400 no-underline">
-                    My Rides
+                    Rides
                 </a>
             </li>
-            <li>
-                <a href="/driverRides" className="hover:text-orange-400 no-underline">
-                    Booked Rides
-                </a>
-            </li>
+            {
+                // Check if user is not null and has the "RIDER" role
+                user?.role === "RIDER" && (
+                    <li>
+                        <a href="/driverRides" className="hover:text-orange-400 no-underline">
+                            Booked Rides
+                        </a>
+                    </li>
+                )
+            }
             <li>
                 <button
                     onClick={handleLogout}
@@ -54,7 +56,7 @@ const Navbar = () => {
                 </a>
             </li>
             <li>
-            <a href="/signup"
+                <a href="/signup"
                    className="text-white bg-gradient-to-r from-orange-300 to-orange-600 py-2 px-3 rounded-md font-semibold hover:bg-orange-700 transition duration-200 no-underline">
                     Create an account
                 </a>
