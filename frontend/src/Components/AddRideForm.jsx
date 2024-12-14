@@ -23,7 +23,6 @@ const AddRideForm = ({ userID, coordsNames }) => {
            destination: coordsNames.destCoordsName
        }))
     },[coordsNames])
-    console.log(newRide);
 
     const [formMessage, setFormMessage] = useState("");
 
@@ -51,7 +50,6 @@ const AddRideForm = ({ userID, coordsNames }) => {
                 updatedAt: getCurrentTime(),
                 driverId: userID,
             });
-            console.log(newRide)
         } catch (error) {
             setFormMessage(`Error adding ride: ${error.message}`);
         }

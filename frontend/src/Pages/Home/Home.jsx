@@ -43,14 +43,6 @@ const Home = () => {
     };
 
     const handleCancelClick = (ride) => {
-
-        reservations.forEach((reservation) => {
-            console.log("Reservation Details:");
-            console.log("  - Reservation ID:", reservation.idReservation);
-            console.log("  - Ride ID:", reservation.ride?.idRide);
-            console.log("  - User ID:", reservation.user?.id);
-        });
-
         const reservationToCancel = reservations.find((reservation) => {
             const rideMatch = reservation.ride?.idRide === ride.idRide;
             const userMatch = String(reservation.user?.id) === String(userID); // Convert both to strings

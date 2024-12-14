@@ -36,9 +36,8 @@ export const getReviewByIdRide = createAsyncThunk(
     "reviews/getReviewByIdRide",
     async (idRide,{rejectWithValue})=>{
         try {
-            const response = await getReviewByIdRideAPI(idRide);
-            console.log(response);
-            return response;
+            return await getReviewByIdRideAPI(idRide);
+
         }catch (error) {
             return rejectWithValue(error.response);
         }
@@ -110,10 +109,26 @@ const reviewSlice = createSlice({
             .addCase(getReviewByIdRide.pending,(state,action)=>{
                 state.loading = true;
             })
-            .addCase(getReviewByIdRide.fulfilled,(state,action)=>{
+            .addCase(getReviewByIdRide.fulfilled, (state, action) => {
                 state.loading = false;
-                state.reviews = action.payload;
+
+                // Check if the payload is a non-empty array
+                if (Array.isArray(action.payload) && action.payload.length > 0) {
+                    // Combine the current state reviews with the new reviews from the payload
+                    // Filter out duplicates by keeping unique reviews based on the review id
+                    const uniqueReviews = [
+                        ...state.reviews,
+                        ...action.payload.filter(
+                            (newReview) => !state.reviews.some((existingReview) => existingReview.idRev === newReview.idRev)
+                        ),
+                    ];
+
+                    // Update the state with the unique reviews
+                    state.reviews = uniqueReviews;
+
+                }
             })
+
             .addCase(getReviewByIdRide.rejected,(state,action)=>{
                 state.loading = false;
                 state.error = action.payload;

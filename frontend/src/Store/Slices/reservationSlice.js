@@ -15,7 +15,6 @@ export const fetchReservationByUserId = createAsyncThunk(
     'reservation/getReservationByUserId',
     async (idUser, { rejectWithValue }) => {
         try {
-            console.log(await fetchReservationByUserIdAPI(idUser));
             return await fetchReservationByUserIdAPI(idUser);
         } catch (error) {
             return rejectWithValue(error.message);
@@ -27,8 +26,6 @@ export const cancelReservation = createAsyncThunk(
     async ({idRide,idUser}, { rejectWithValue }) => { // Accept an object with idRide and idUser
         try {
              // Pass both parameters to the API
-            console.log("Cancelling reservation with ID:", idRide, idUser);
-
             return await cancelReservationAPI(idRide, idUser); // Return the success message
         } catch (error) {
             return rejectWithValue(error); // Reject with the error message
@@ -39,7 +36,6 @@ export const createReservation = createAsyncThunk(
     'reservation/createReservation',
     async (reservationDetails, { rejectWithValue }) => {
         try {
-            console.log(reservationDetails)
             return await createReservationAPI(reservationDetails);
         } catch (error) {
             return rejectWithValue(error.message);
@@ -62,7 +58,6 @@ export const fetchReservationByRideId = createAsyncThunk(
     'reservation/getReservationByRideId',
     async (rideId,{rejectWithValue}) => {
         try{
-            console.log(await fetchReservationByRideIdAPI(rideId));
             return await fetchReservationByRideIdAPI(rideId);
         }catch (error) {
             return rejectWithValue(error.message);
@@ -95,7 +90,6 @@ const reservationSlice = createSlice({
             })
             .addCase(createReservation.fulfilled, (state, action) => {
                 state.loading = false;
-                console.log('New Reservation:', action.payload);
                 state.reservations.push(action.payload);
             })
             .addCase(createReservation.rejected, (state, action) => {

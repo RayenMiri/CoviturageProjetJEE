@@ -19,12 +19,10 @@ const DriverRidesPage = () => {
     useEffect(() => {
         if (rides.length > 0) {
             rides.forEach((ride) => {
-                console.log(ride.idRide);
                 dispatch(fetchReservationByRideId(ride.idRide));
                 dispatch(getReviewByIdRide(ride.idRide));
             });
         }
-        console.log(reviews);
 
     }, [rides, dispatch]);
 
@@ -50,6 +48,7 @@ const DriverRidesPage = () => {
                 <h1 className="text-2xl font-bold text-gray-800 mb-4">Reserved Rides</h1>
 
                 {/* Earnings Summary */}
+                {/*nb.toFixed => change the number faction digits ex : 19.148.toFixed(1) = > 19.1*/}
                 <div className="flex justify-between items-center bg-gray-200 p-4 rounded-lg mb-6">
                     <span className="text-lg font-semibold text-gray-700">Total Earnings:</span>
                     <span className="text-xl font-bold text-green-600">{totalEarnings.toFixed(2)} DT</span>

@@ -87,7 +87,6 @@ const RidesDisplay = ({ userID, userRole }) => {
 
     const handleModalSave = () => {
         if (currentRide) {
-            console.log(currentRide);
             dispatch(updateRide(currentRide));
             setIsModalOpen(false);
         }

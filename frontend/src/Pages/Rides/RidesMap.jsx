@@ -43,7 +43,6 @@ const fetchCoordinates = async (location) => {
         }
         return null;
     } catch (error) {
-        console.error("Error fetching coordinates:", error);
         return null;
     }
 };
@@ -72,7 +71,7 @@ const fetchAddress = async (lonlat) => {
         }
         return null;
     } catch (error) {
-        console.error("Error fetching address:", error);
+
         return null;
     }
 };
