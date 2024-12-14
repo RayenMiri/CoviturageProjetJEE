@@ -1,22 +1,26 @@
 import React from 'react';
-
+import logo from "../assests/logo.png"
 const Footer = () => {
     return (
-        <footer style={footerStyle}>
-            <p>&copy; {new Date().getFullYear()} TEST123. All rights reserved.</p>
+        <footer className="bg-gray-800 text-white py-8">
+            <div className="container mx-auto px-6">
+                <div className="flex flex-col md:flex-row justify-between items-center">
+                    <div className="mb-4 md:mb-0 flex items-center">
+                        <img src={logo} alt="WeRide Logo" width="40" height="40"/>
+                        <span className="ml-2 text-xl font-bold">WeRide</span>
+                    </div>
+                    <div className="flex space-x-4">
+                        <a href="/about" className="hover:text-indigo-400">About</a>
+                        <a href="/contact" className="hover:text-indigo-400">Contact</a>
+                        <a href="/privacy" className="hover:text-indigo-400">Privacy Policy</a>
+                        <a href="/terms" className="hover:text-indigo-400">Terms of Service</a>
+                    </div>
+                </div>
+                <div className="mt-8 text-center text-sm">
+                    © {new Date().getFullYear()} WeRide. All rights reserved.
+                </div>
+            </div>
         </footer>
     );
 };
-
-const footerStyle = {
-    backgroundColor: '#f8f9fa',
-    padding: '1px',
-    textAlign: 'center',
-    position: 'fixed',
-    left: '0',
-    bottom: '0',
-    width: '100%',
-    borderTop: '1px solid #e7e7e7',
-};
-
 export default Footer;

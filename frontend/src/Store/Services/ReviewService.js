@@ -28,12 +28,10 @@ export const getReviewByIdReviewedAPI = async (userId) => {
 };
 
 export const getReviewByIdRideAPI = async (idRide) => {
-    console.log(idRide);
-    const response = await fetch(`${BASE_URL}/getReviewByIdRide/${idRide}`);
+    const response = await fetch(`${BASE_URL}/getReviewsByIdRide/${idRide}`);
     if (!response.ok) {
         throw new Error(`Error: ${response.status} ${response.statusText}`);
     }
-    console.log(await response.json());
     return await response.json();
 }
 

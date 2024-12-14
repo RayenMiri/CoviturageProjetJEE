@@ -91,6 +91,7 @@ const Home = () => {
         dispatch(createReview(review)).then((response) => {
             if (response.meta.requestStatus === "fulfilled") {
                 setReviewModalVisible(false);
+                alert("Review Submitted Successfully");
             }
         });
     };

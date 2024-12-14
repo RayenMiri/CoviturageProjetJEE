@@ -13,9 +13,8 @@ export const createReview = createAsyncThunk(
     async (review, { rejectWithValue }) => {
         try {
             console.log(review);
-            const response = await createReviewAPI(review);
-            console.log(response.data);
-            return response.data;
+            return await createReviewAPI(review);
+
         } catch (error) {
             return rejectWithValue(error.response.data);
         }
@@ -26,8 +25,7 @@ export const fetchReviewByUserId = createAsyncThunk(
     "reviews/fetchReviewByUserId",
     async (userId, { rejectWithValue }) => {
         try {
-            const response = await getReviewByIdReviewedAPI(userId);
-            return response.data;
+            return await getReviewByIdReviewedAPI(userId);
         } catch (error) {
             return rejectWithValue(error.response.data);
         }
@@ -39,9 +37,10 @@ export const getReviewByIdRide = createAsyncThunk(
     async (idRide,{rejectWithValue})=>{
         try {
             const response = await getReviewByIdRideAPI(idRide);
-            return response.data;
+            console.log(response);
+            return response;
         }catch (error) {
-            return rejectWithValue(error.response.data);
+            return rejectWithValue(error.response);
         }
     }
 )

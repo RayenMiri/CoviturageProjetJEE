@@ -12,6 +12,9 @@ import Footer from "./Components/Footer"
 import PrivateRoute from "./Pages/Auth/PrivateRoute";
 import Profile from "./Pages/Profile/Profile"
 import DriverRidesPage from "./Pages/Rides/DriverRidesPage";
+import LandingPage from "./Pages/Landing/LandingPage";
+import About from "./Pages/About/About";
+import ContactPage from "./Pages/Contact/Contact";
 const App = () => (
     <div>
         <Navbar/>
@@ -23,10 +26,13 @@ const App = () => (
                 <Route path="/dashboard" element={<PrivateRoute children={<Dashboard/>}/>}/>
                 <Route path="/createRide" element={<PrivateRoute children={<AddRideForm/>}/>}/>
                 <Route path="/ridesMap" element={ <PrivateRoute children={<RidesMap/>}/>}/>
-                <Route path="/home" element={<Home/>}/>
+                <Route path="/home" element={ <PrivateRoute children={<Home/>}/>}/>
                 <Route path="/error" element={<Error/>}/>
-                <Route path="/Profile" element={<Profile/>}/>
+                <Route path="/Profile" element={ <PrivateRoute children={<Profile/>}/>}/>
                 <Route path="/driverRides" element={ <PrivateRoute children={<DriverRidesPage/>}/> }/>
+                <Route path="/landingPage" element={<LandingPage/>}/>
+                <Route path="/about" element={<About/>}/>
+                <Route path="/contact" element={<ContactPage/>}/>
 
             </Routes>
         </BrowserRouter>
