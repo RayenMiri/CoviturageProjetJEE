@@ -4,7 +4,9 @@ import { useDispatch, useSelector } from "react-redux";
 import L from "leaflet";
 import axios from "axios";
 import { fetchRides } from "../../Store/Slices/ridesSlice";
+import { createReservation } from "../../Store/Slices/reservationSlice";
 import AddRideForm from '../../Components/AddRideForm';
+import SeatSelectionPopup from "../../Components/SeatSelectionPopUp";
 import "leaflet/dist/leaflet.css";
 
 const departureIcon = L.icon({
@@ -37,12 +39,13 @@ const fetchCoordinates = async (location) => {
         if (response.data.features && response.data.features.length > 0) {
             const coords = response.data.features[0].geometry.coordinates;
             return {
-                lat: coords[1], // Latitude
-                lng: coords[0], // Longitude
+                lat: coords[1],
+                lng: coords[0],
             };
         }
         return null;
     } catch (error) {
+        console.error("Error fetching coordinates:", error);
         return null;
     }
 };
@@ -53,25 +56,19 @@ const fetchAddress = async (lonlat) => {
             params: {
                 lat: lonlat.lat,
                 lon: lonlat.lng,
-
             },
         });
 
         if (response.data.features && response.data.features.length > 0) {
             const properties = response.data.features[0].properties;
-
-            // Combine relevant fields into a readable location string
             const name = properties.name || "";
             const state = properties.state || "";
             const country = properties.country || "";
-
-            // Return a formatted location string
-            const locationName = [name, state, country].filter(Boolean).join(", ");
-            return locationName;
+            return [name, state, country].filter(Boolean).join(", ");
         }
         return null;
     } catch (error) {
-
+        console.error("Error fetching address:", error);
         return null;
     }
 };
@@ -81,12 +78,10 @@ function MapBoundsAdjuster({ coordinates }) {
 
     useEffect(() => {
         if (coordinates && coordinates.length > 0) {
-            const bounds = L.latLngBounds(coordinates.map(coord => {
-                return [
-                    coord.departureCoordinates?.lat || 0,
-                    coord.departureCoordinates?.lng || 0
-                ];
-            }));
+            const bounds = L.latLngBounds(coordinates.map(coord => [
+                coord.departureCoordinates?.lat || 0,
+                coord.departureCoordinates?.lng || 0
+            ]));
 
             coordinates.forEach(coord => {
                 if (coord.destinationCoordinates) {
@@ -123,9 +118,16 @@ const RidesMap = () => {
     const [isSettingDeparture, setIsSettingDeparture] = useState(true);
     const [destCoordsName, setDestCoordsName] = useState("");
     const [depCoordsName, setDepCoordsName] = useState("");
+    const [showSeatSelection, setShowSeatSelection] = useState(false);
+    const [selectedRide, setSelectedRide] = useState(null);
 
-    const userID = JSON.parse(localStorage.getItem("user")).userId;
-    const userRole = JSON.parse(localStorage.getItem("user")).role;
+    const userID = JSON.parse(localStorage.getItem("user"))?.userId;
+    const userRole = JSON.parse(localStorage.getItem("user"))?.role;
+
+    const handleReservation = (ride, seats) => {
+        dispatch(createReservation({ ...ride, nbOfSeats: seats, idUser: userID }));
+        setShowSeatSelection(false);
+    };
 
     useEffect(() => {
         dispatch(fetchRides());
@@ -198,7 +200,7 @@ const RidesMap = () => {
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             />
             {mapLoaded && <MapBoundsAdjuster coordinates={coordinates} />}
-            {userRole === "RIDER" &&  <MapClickHandler onMapClick={handleMapClick} />}
+            {userRole === "RIDER" && <MapClickHandler onMapClick={handleMapClick} />}
             {coordinates.map((coord) => (
                 <React.Fragment key={coord.id}>
                     {coord.departureCoordinates && (
@@ -214,6 +216,15 @@ const RidesMap = () => {
                                     <p><strong>Available Seats: </strong> {coord.ride.availableSeats}</p>
                                     <p><strong>Destination : </strong>{coord.ride.destination}</p>
                                     <p><strong>Price: </strong> {coord.ride.pricePerSeat} TND</p>
+                                    <button
+                                        onClick={() => {
+                                            setSelectedRide(coord.ride);
+                                            setShowSeatSelection(true);
+                                        }}
+                                        className="mt-2 bg-blue-500 text-white p-2 rounded-lg"
+                                    >
+                                        Reserve a Seat
+                                    </button>
                                 </div>
                             </Popup>
                         </Marker>
@@ -251,6 +262,14 @@ const RidesMap = () => {
             <h1 className="text-3xl font-bold text-center text-blue-600 mb-6">
                 Available Rides Map
             </h1>
+
+            {showSeatSelection && selectedRide && (
+                <SeatSelectionPopup
+                    availableSeats={selectedRide.availableSeats}
+                    onClose={() => setShowSeatSelection(false)}
+                    onSubmit={(seats) => handleReservation(selectedRide, seats)}
+                />
+            )}
 
             <div className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div className="col-span-1">

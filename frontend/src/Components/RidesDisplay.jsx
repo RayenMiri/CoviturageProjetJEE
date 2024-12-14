@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { createReservation } from "../Store/Slices/reservationSlice";
 import { fetchRidesByDriverId, fetchRides, deleteRide, updateRide } from "../Store/Slices/ridesSlice";
 
 const RidesDisplay = ({ userID, userRole }) => {
     const dispatch = useDispatch();
     const { rides, loading, error } = useSelector((state) => state.rides);
+    const [reservationError, setReservationError] = useState(null);
+    const [reservationSuccess, setReservationSuccess] = useState(null);
 
     const [filters, setFilters] = useState({
         departure: "",
@@ -35,26 +38,32 @@ const RidesDisplay = ({ userID, userRole }) => {
         }));
     };
 
-    const sortedRides = rides.filter((ride) => {
-        return (
-            (filters.departure === "" || ride.departureLocation.toLowerCase().includes(filters.departure.toLowerCase())) &&
-            (filters.destination === "" || ride.destination.toLowerCase().includes(filters.destination.toLowerCase())) &&
-            (filters.maxPrice === "" || ride.pricePerSeat <= parseFloat(filters.maxPrice))
-        );
-    }).sort((a, b) => {
-        if (sortConfig.key) {
-            const aValue = a[sortConfig.key];
-            const bValue = b[sortConfig.key];
+    const filteredRides = useMemo(() => {
+        return rides.filter((ride) => {
+            return (
+                (filters.departure === "" || ride.departureLocation.toLowerCase().includes(filters.departure.toLowerCase())) &&
+                (filters.destination === "" || ride.destination.toLowerCase().includes(filters.destination.toLowerCase())) &&
+                (filters.maxPrice === "" || ride.pricePerSeat <= parseFloat(filters.maxPrice))
+            );
+        });
+    }, [rides, filters]);
 
-            if (aValue < bValue) {
-                return sortConfig.direction === 'asc' ? -1 : 1;
+    const sortedRides = useMemo(() => {
+        return filteredRides.sort((a, b) => {
+            if (sortConfig.key) {
+                const aValue = a[sortConfig.key];
+                const bValue = b[sortConfig.key];
+
+                if (aValue < bValue) {
+                    return sortConfig.direction === 'asc' ? -1 : 1;
+                }
+                if (aValue > bValue) {
+                    return sortConfig.direction === 'asc' ? 1 : -1;
+                }
             }
-            if (aValue > bValue) {
-                return sortConfig.direction === 'asc' ? 1 : -1;
-            }
-        }
-        return 0;
-    });
+            return 0;
+        });
+    }, [filteredRides, sortConfig]);
 
     const requestSort = (key) => {
         let direction = 'asc';
@@ -104,7 +113,11 @@ const RidesDisplay = ({ userID, userRole }) => {
         <div className="mt-6">
             <h2 className="text-xl font-semibold mb-4">Available Rides</h2>
             {loading && <p className="text-center text-blue-500">Loading rides...</p>}
-            {error && <p className="text-center text-red-500">Error: {error}</p>}
+            {error && <p className="text-center text-red-500">Error: Something went wrong. Please try again.</p>}
+
+            {/* Reservation status */}
+            {reservationSuccess && <p className="text-green-500">{reservationSuccess}</p>}
+            {reservationError && <p className="text-red-500">{reservationError}</p>}
 
             {/* Filters */}
             <div className="mb-4 flex space-x-4">
@@ -115,6 +128,7 @@ const RidesDisplay = ({ userID, userRole }) => {
                     value={filters.departure}
                     onChange={handleFilterChange}
                     className="px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-300"
+                    aria-label="Departure filter"
                 />
                 <input
                     type="text"
@@ -123,6 +137,7 @@ const RidesDisplay = ({ userID, userRole }) => {
                     value={filters.destination}
                     onChange={handleFilterChange}
                     className="px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-300"
+                    aria-label="Destination filter"
                 />
                 <input
                     type="number"
@@ -131,6 +146,7 @@ const RidesDisplay = ({ userID, userRole }) => {
                     value={filters.maxPrice}
                     onChange={handleFilterChange}
                     className="px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-300"
+                    aria-label="Max Price filter"
                 />
             </div>
 
@@ -148,54 +164,56 @@ const RidesDisplay = ({ userID, userRole }) => {
                         Price {getSortArrow('pricePerSeat')}
                     </th>
                     <th className="px-4 py-2">Restrictions</th>
-                    {
-                        userRole === "RIDER" && (
-                            <>
-                                <th className="px-4 py-2">Actions</th>
-                            </>
-                        )
-                    }
+                    <th className="px-4 py-2">Actions</th>
                 </tr>
                 </thead>
                 <tbody>
-                {sortedRides.map((ride) => (
-                    <tr key={ride.idRide} className="border-t">
-                        <td className="px-4 py-2">{ride.departureLocation}</td>
-                        <td className="px-4 py-2">{ride.destination}</td>
-                        <td className="px-4 py-2">{new Date(ride.departureDateTime).toLocaleString()}</td>
-                        <td className="px-4 py-2">{ride.availableSeats}</td>
-                        <td className="px-4 py-2">{ride.pricePerSeat} DT </td>
-                        <td className="px-4 py-2">{ride.restrictions || "None"}</td>
-                        <td className="px-4 py-2 flex space-x-2">
-                            {userRole === "RIDER" && (
-                                <>
-                                    <button
-                                        onClick={() => handleEditClick(ride)}
-                                        className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600"
-                                    >
-                                        Edit
-                                    </button>
-                                    <button
-                                        onClick={() => handleDelete(ride.idRide)}
-                                        className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
-                                    >
-                                        Delete
-                                    </button>
-                                </>
-                            )}
-
-                        </td>
+                {sortedRides.length === 0 ? (
+                    <tr>
+                        <td colSpan="7" className="text-center py-4">No rides available</td>
                     </tr>
-                ))}
+                ) : (
+                    sortedRides.map((ride) => (
+                        <tr key={ride.idRide} className="border-t">
+                            <td className="px-4 py-2">{ride.departureLocation}</td>
+                            <td className="px-4 py-2">{ride.destination}</td>
+                            <td className="px-4 py-2">{new Date(ride.departureDateTime).toLocaleString()}</td>
+                            <td className="px-4 py-2">{ride.availableSeats}</td>
+                            <td className="px-4 py-2">{ride.pricePerSeat} DT </td>
+                            <td className="px-4 py-2">{ride.restrictions || "None"}</td>
+                            <td className="px-4 py-2 flex space-x-2">
+                                {/* Only RIDER can edit or delete */}
+                                {userRole === "RIDER" && (
+                                    <>
+                                        <button
+                                            onClick={() => handleEditClick(ride)}
+                                            className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600"
+                                            aria-label="Edit ride"
+                                        >
+                                            Edit
+                                        </button>
+                                        <button
+                                            onClick={() => handleDelete(ride.idRide)}
+                                            className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+                                            aria-label="Delete ride"
+                                        >
+                                            Delete
+                                        </button>
+                                    </>
+                                )}
+                            </td>
+                        </tr>
+                    ))
+                )}
                 </tbody>
             </table>
 
-            {/* Modal */}
+            {/* Modal for Editing Ride */}
             {isModalOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-                    <div className="bg-white rounded-lg p-6 w-1/3">
-                        <h3 className="text-lg font-semibold mb-4">Edit Ride</h3>
-                        <div className="space-y-4">
+                <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-500 bg-opacity-75">
+                    <div className="bg-white p-6 rounded-lg">
+                        <h3 className="text-xl mb-4">Edit Ride</h3>
+                        <div>
                             <input
                                 type="text"
                                 name="departureLocation"
@@ -210,29 +228,42 @@ const RidesDisplay = ({ userID, userRole }) => {
                                 value={currentRide.destination}
                                 onChange={handleInputChange}
                                 placeholder="Destination"
-                                className="w-full px-3 py-2 border rounded-md"
+                                className="w-full px-3 py-2 border rounded-md mt-2"
+                            />
+                            <input
+                                type="datetime-local"
+                                name="departureDateTime"
+                                value={currentRide.departureDateTime}
+                                onChange={handleInputChange}
+                                className="w-full px-3 py-2 border rounded-md mt-2"
+                            />
+                            <input
+                                type="number"
+                                name="availableSeats"
+                                value={currentRide.availableSeats}
+                                onChange={handleInputChange}
+                                placeholder="Available Seats"
+                                className="w-full px-3 py-2 border rounded-md mt-2"
                             />
                             <input
                                 type="number"
                                 name="pricePerSeat"
                                 value={currentRide.pricePerSeat}
                                 onChange={handleInputChange}
-                                placeholder="Price Per Seat"
-                                className="w-full px-3 py-2 border rounded-md"
+                                placeholder="Price per Seat"
+                                className="w-full px-3 py-2 border rounded-md mt-2"
                             />
-                        </div>
-                        <div className="mt-4 flex justify-end space-x-2">
-                            <button
-                                onClick={handleModalClose}
-                                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
-                            >
-                                Cancel
-                            </button>
                             <button
                                 onClick={handleModalSave}
-                                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                                className="mt-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
                             >
                                 Save
+                            </button>
+                            <button
+                                onClick={handleModalClose}
+                                className="mt-4 ml-2 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+                            >
+                                Cancel
                             </button>
                         </div>
                     </div>

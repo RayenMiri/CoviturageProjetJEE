@@ -6,24 +6,39 @@ import { logout } from "../Store/Slices/authSlice";
 
 const LoggedInLinks = ({ user, handleLogout }) => (
     <>
+        {
+            user?.role === "PASSENGER" && (
+                <>
+                    <li className="flex items-center gap-2">
+                        <Home className="h-5 w-5 text-white"/>
+                        <a href="/Home" className="text-white hover:text-orange-400 transition">Home</a>
+                    </li>
+                </>
+            )
+        }
+
+        {user?.role === "RIDER" && (
+            <>
+                <li className="flex items-center gap-2">
+                    <Car className="h-5 w-5 text-white"/>
+                    <a href="/dashboard" className="text-white hover:text-orange-400 transition">My Rides</a>
+                </li>
+                <li className="flex items-center gap-2">
+                    <Car className="h-5 w-5 text-white"/>
+                    <a href="/driverRides" className="text-white hover:text-orange-400 transition">Booked Rides</a>
+                </li>
+            </>
+
+        )}
+
         <li className="flex items-center gap-2">
-            <Home className="h-5 w-5 text-white"/>
-            <a href="/Home" className="hover:text-orange-400 transition">Home</a>
+            <Car className="h-5 w-5 text-white"/>
+            <a href="/ridesMap" className="text-white hover:text-orange-400 transition">View Map</a>
         </li>
         <li className="flex items-center gap-2">
             <User className="h-5 w-5 text-white"/>
-            <a href="/Profile" className="hover:text-orange-400 transition">Profile</a>
+            <a href="/Profile" className="text-white hover:text-orange-400 transition">Profile</a>
         </li>
-        <li className="flex items-center gap-2">
-            <Car className="h-5 w-5 text-white"/>
-            <a href="/dashboard" className="hover:text-orange-400 transition">My Rides</a>
-        </li>
-        {user?.role === "RIDER" && (
-            <li className="flex items-center gap-2">
-                <Car className="h-5 w-5 text-white"/>
-                <a href="/driverRides" className="hover:text-orange-400 transition">Booked Rides</a>
-            </li>
-        )}
         <li>
             <button
                 onClick={handleLogout}
@@ -39,15 +54,15 @@ const LoggedOutLinks = () => (
     <>
         <li className="flex items-center gap-2">
             <Home className="h-5 w-5 text-white"/>
-            <a href="/landingPage" className="hover:text-orange-400 transition">Home</a>
+            <a href="/landingPage" className="text-white hover:text-orange-400 transition">Home</a>
         </li>
         <li className="flex items-center gap-2">
             <Info className="h-5 w-5 text-white"/>
-            <a href="/about" className="hover:text-orange-400 transition">About</a>
+            <a href="/about" className="text-white text-whitehover:text-orange-400 transition">About</a>
         </li>
         <li className="flex items-center gap-2">
             <PhoneCall className="h-5 w-5 text-white"/>
-            <a href="/contact" className="hover:text-orange-400 transition">Contact</a>
+            <a href="/contact" className="text-white hover:text-orange-400 transition">Contact</a>
         </li>
         <li className="flex items-center gap-2">
             <LogIn className="h-5 w-5 text-white"/>

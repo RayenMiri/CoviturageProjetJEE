@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchRidesByDriverId } from "../../Store/Slices/ridesSlice";
 import { fetchReservationByRideId } from "../../Store/Slices/reservationSlice";
-import {getReviewByIdRide} from "../../Store/Slices/ReviewSlice";
+import { getReviewByIdRide } from "../../Store/Slices/ReviewSlice";
 
 const DriverRidesPage = () => {
     const [totalEarnings, setTotalEarnings] = useState(0);
@@ -12,6 +12,7 @@ const DriverRidesPage = () => {
     const { reviews, loading: reviewsLoading, error: reviewsError } = useSelector((state) => state.reviews);
     const driverId = JSON.parse(localStorage.getItem("user")).userId;
     const [revAv , setRevAv] = useState(0);
+
     useEffect(() => {
         dispatch(fetchRidesByDriverId(driverId));
     }, [dispatch, driverId]);
@@ -23,7 +24,6 @@ const DriverRidesPage = () => {
                 dispatch(getReviewByIdRide(ride.idRide));
             });
         }
-
     }, [rides, dispatch]);
 
     useEffect(() => {
@@ -34,38 +34,35 @@ const DriverRidesPage = () => {
         setTotalEarnings(earnings);
     }, [reservations]);
 
-    useEffect(  () => {
+    useEffect(() => {
         let sumRev = 0;
-        reviews.forEach((review)=>{
+        reviews.forEach((review) => {
             sumRev += review.rating;
-        })
-        setRevAv(sumRev/reviews.length)
-    },[reviews])
+        });
+        setRevAv(sumRev / reviews.length);
+    }, [reviews]);
 
     return (
         <div className="bg-gray-100 min-h-screen p-6">
-            <div className="max-w-6xl mx-auto bg-white shadow-md rounded-lg p-4">
-                <h1 className="text-2xl font-bold text-gray-800 mb-4">Reserved Rides</h1>
+            <div className="max-w-6xl mx-auto bg-white shadow-lg rounded-xl p-6">
+                <h1 className="text-3xl font-bold text-gray-800 mb-4">Reserved Rides</h1>
 
                 {/* Earnings Summary */}
-                {/*nb.toFixed => change the number faction digits ex : 19.148.toFixed(1) = > 19.1*/}
-                <div className="flex justify-between items-center bg-gray-200 p-4 rounded-lg mb-6">
-                    <span className="text-lg font-semibold text-gray-700">Total Earnings:</span>
-                    <span className="text-xl font-bold text-green-600">{totalEarnings.toFixed(2)} DT</span>
+                <div className="flex justify-between items-center bg-gray-200 p-5 rounded-lg mb-6 shadow-md">
+                    <span className="text-xl font-semibold text-gray-700">Total Earnings:</span>
+                    <span className="text-2xl font-bold text-green-600">{totalEarnings.toFixed(2)} DT</span>
                 </div>
 
                 {/* Average Reviews */}
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                    <h2 className="text-xl font-semibold text-blue-800 mb-2">Average Rating</h2>
+                <div className="bg-blue-50 border border-blue-300 rounded-lg p-5 mb-6 shadow-md">
+                    <h2 className="text-xl font-semibold text-blue-800 mb-3">Average Rating</h2>
                     <div className="flex items-center">
-                        <div className="flex items-center mr-2">
+                        <div className="flex items-center mr-3">
                             {[1, 2, 3, 4, 5].map((star) => (
                                 <svg
                                     key={star}
-                                    className={`w-6 h-6 ${
-                                        star <= Math.round(revAv)
-                                            ? 'text-yellow-400'
-                                            : 'text-gray-300'
+                                    className={`w-8 h-8 ${
+                                        star <= Math.round(revAv) ? 'text-yellow-500' : 'text-gray-300'
                                     }`}
                                     fill="currentColor"
                                     viewBox="0 0 20 20"
@@ -75,8 +72,8 @@ const DriverRidesPage = () => {
                                 </svg>
                             ))}
                         </div>
-                        <span className="text-3xl font-bold text-blue-600">{revAv.toFixed(1)}</span>
-                        <span className="text-gray-600 ml-2">
+                        <span className="text-4xl font-semibold text-blue-700">{revAv.toFixed(1)}</span>
+                        <span className="text-gray-600 ml-3">
                             ({reviews.length} {reviews.length === 1 ? 'review' : 'reviews'})
                         </span>
                     </div>
@@ -88,15 +85,15 @@ const DriverRidesPage = () => {
                 ) : ridesError || reservationsError ? (
                     <p className="text-center text-red-500">Error: {ridesError || reservationsError}</p>
                 ) : reservations && reservations.length > 0 ? (
-                    <table className="table-auto min-w-full bg-white border-collapse border border-gray-200">
+                    <table className="table-auto min-w-full bg-white border-collapse border border-gray-300 shadow-md">
                         <thead>
-                        <tr className="bg-gray-200">
-                        <th className="border border-gray-300 px-4 py-2 text-left text-gray-700">Reservation ID</th>
-                            <th className="border border-gray-300 px-4 py-2 text-left text-gray-700">Passenger Name</th>
-                            <th className="border border-gray-300 px-4 py-2 text-left text-gray-700">Passenger email</th>
-                            <th className="border border-gray-300 px-4 py-2 text-left text-gray-700">Ride Details</th>
-                            <th className="border border-gray-300 px-4 py-2 text-left text-gray-700">Seats Reserved</th>
-                            <th className="border border-gray-300 px-4 py-2 text-left text-gray-700">Price</th>
+                        <tr className="bg-gray-300">
+                            <th className="border border-gray-400 px-6 py-3 text-left text-gray-700">Reservation ID</th>
+                            <th className="border border-gray-400 px-6 py-3 text-left text-gray-700">Passenger Name</th>
+                            <th className="border border-gray-400 px-6 py-3 text-left text-gray-700">Passenger email</th>
+                            <th className="border border-gray-400 px-6 py-3 text-left text-gray-700">Ride Details</th>
+                            <th className="border border-gray-400 px-6 py-3 text-left text-gray-700">Seats Reserved</th>
+                            <th className="border border-gray-400 px-6 py-3 text-left text-gray-700">Price</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -107,18 +104,15 @@ const DriverRidesPage = () => {
                             )
                             .map((reservation) => (
                                 <tr key={reservation.id} className="hover:bg-gray-100">
-                                    <td className="border-gray-300 px-4 py-2">{reservation.idReservation}</td>
-                                    <td className="border-gray-300 px-4 py-2">
-                                        {reservation.user.username}
+                                    <td className="border-gray-400 px-6 py-4">{reservation.idReservation}</td>
+                                    <td className="border-gray-400 px-6 py-4">{reservation.user.username}</td>
+                                    <td className="border-gray-400 px-6 py-4">{reservation.user.email}</td>
+                                    <td className="border-gray-400 px-6 py-4">
+                                        {reservation.ride.departureLocation} to {reservation.ride.destination} on{" "}
+                                        {new Date(reservation.ride.departureDateTime).toLocaleString()}
                                     </td>
-                                    <td className="border-gray-300 px-4 py-2">
-                                        {reservation.user.email}
-                                    </td>
-                                    <td className="border-gray-300 px-4 py-2">
-                                        {reservation.ride.departureLocation} to {reservation.ride.destination} on {new Date(reservation.ride.departureDateTime).toLocaleString()}
-                                    </td>
-                                    <td className="border-gray-300 px-4 py-2 text-center">{reservation.nbOfSeats}</td>
-                                    <td className="border-gray-300 px-4 py-2 text-right">
+                                    <td className="border-gray-400 px-6 py-4 text-center">{reservation.nbOfSeats}</td>
+                                    <td className="border-gray-400 px-6 py-4 text-right">
                                         {(reservation.nbOfSeats * reservation.ride.pricePerSeat).toFixed(2)} DT
                                     </td>
                                 </tr>

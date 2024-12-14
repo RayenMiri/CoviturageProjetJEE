@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchRides } from '../../Store/Slices/ridesSlice';
 import { createReservation, fetchReservationByUserId, cancelReservation } from '../../Store/Slices/reservationSlice';
-import {createReview, getReviewByIdRide} from '../../Store/Slices/ReviewSlice';
+import { createReview } from '../../Store/Slices/ReviewSlice';
 import { Link } from "react-router-dom";
 import Modal from '../../Components/Modal';
 import { getCurrentTime } from '../../Utils/getCurrentTimeUtil';
@@ -19,7 +19,14 @@ const Home = () => {
     const [isReviewModalVisible, setReviewModalVisible] = useState(false);
     const [rating, setRating] = useState(0);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const {reviews , loadingRev , errorRev} = useSelector((state)=>state.reviews);
+    const { reviews, loadingRev, errorRev } = useSelector((state) => state.reviews);
+
+    // Filter state
+    const [departureLocation, setDepartureLocation] = useState('');
+    const [destination, setDestination] = useState('');
+    const [minPrice, setMinPrice] = useState('');
+    const [maxPrice, setMaxPrice] = useState('');
+
     const onConfirm = (reservationDetails) => {
         if (isSubmitting) return;
         setIsSubmitting(true);
@@ -49,7 +56,6 @@ const Home = () => {
             return rideMatch && userMatch;
         });
 
-
         if (reservationToCancel) {
             dispatch(
                 cancelReservation({
@@ -57,7 +63,6 @@ const Home = () => {
                     idUser: reservationToCancel.user?.id
                 })
             );
-
         } else {
             alert("No reservation found for this ride.");
         }
@@ -94,15 +99,55 @@ const Home = () => {
         );
     };
 
+    // Filter function
+    const filteredRides = rides.filter((ride) => {
+        const matchesDeparture = ride.departureLocation.toLowerCase().includes(departureLocation.toLowerCase());
+        const matchesDestination = ride.destination.toLowerCase().includes(destination.toLowerCase());
+        const matchesPrice = (minPrice ? ride.pricePerSeat >= minPrice : true) && (maxPrice ? ride.pricePerSeat <= maxPrice : true);
+
+        return matchesDeparture && matchesDestination && matchesPrice;
+    });
 
     return (
         <div className="homepage">
             {loading && <p>Loading rides...</p>}
             {error && <p>Error: {error}</p>}
-            {!loading && !error && rides.length === 0 && <p>No rides available.</p>}
+            {!loading && !error && filteredRides.length === 0 && <p>No rides available.</p>}
+
+            {/* Search Filters */}
+            <div className="filters p-4">
+                <input
+                    type="text"
+                    placeholder="Departure Location"
+                    value={departureLocation}
+                    onChange={(e) => setDepartureLocation(e.target.value)}
+                    className="p-2 border rounded"
+                />
+                <input
+                    type="text"
+                    placeholder="Destination"
+                    value={destination}
+                    onChange={(e) => setDestination(e.target.value)}
+                    className="p-2 border rounded ml-2"
+                />
+                <input
+                    type="number"
+                    placeholder="Min Price"
+                    value={minPrice}
+                    onChange={(e) => setMinPrice(e.target.value)}
+                    className="p-2 border rounded ml-2"
+                />
+                <input
+                    type="number"
+                    placeholder="Max Price"
+                    value={maxPrice}
+                    onChange={(e) => setMaxPrice(e.target.value)}
+                    className="p-2 border rounded ml-2"
+                />
+            </div>
 
             <div className="rides-list flex flex-wrap justify-center column-gap-5 row-gap-5">
-                {rides.map((ride) => (
+                {filteredRides.map((ride) => (
                     ride.availableSeats > 0 && (
                         <div
                             key={ride.idRide}
@@ -174,47 +219,22 @@ const Home = () => {
             </div>
 
             {isModalVisible && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
                     <Modal
-                        isVisible={isModalVisible}
-                        ride={selectedRide} // Pass the selected ride to the Modal
-                        user={user}         // Pass the logged-in user to the Modal
-                        onClose={() => setModalVisible(false)} // Close modal handler
-                        onConfirm={onConfirm}/>
-                    <button onClick={() => setModalVisible(false)}
-                            className="absolute top-2 right-2 text-white bg-red-500 rounded-full px-3 py-1 hover:bg-red-600">X</button>
+                        selectedRide={selectedRide}
+                        onConfirm={onConfirm}
+                        onCancel={() => setModalVisible(false)}
+                    />
                 </div>
             )}
 
-
             {isReviewModalVisible && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                    <div className="bg-white p-6 rounded-md shadow-lg">
-                        <h3 className="text-xl font-semibold mb-4">Rate the Ride</h3>
-                        <div className="flex justify-center space-x-2 mb-4">
-                            {[1, 2, 3, 4, 5].map((star) => (
-                                <button
-                                    key={star}
-                                    onClick={() => setRating(star)}
-                                    className={`text-2xl ${rating >= star ? 'text-yellow-500' : 'text-gray-400'}`}
-                                >
-                                    ★
-                                </button>
-                            ))}
-                        </div>
-                        <button
-                            onClick={submitReview}
-                            className="bg-indigo-600 text-white px-4 py-2 rounded-md"
-                        >
-                            Submit Review
-                        </button>
-                        <button
-                            onClick={() => setReviewModalVisible(false)}
-                            className="bg-gray-400 text-white px-4 py-2 rounded-md ml-2"
-                        >
-                            Cancel
-                        </button>
-                    </div>
+                <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+                    <Modal
+                        selectedRide={selectedRide}
+                        onConfirm={submitReview}
+                        onCancel={() => setReviewModalVisible(false)}
+                    />
                 </div>
             )}
         </div>
