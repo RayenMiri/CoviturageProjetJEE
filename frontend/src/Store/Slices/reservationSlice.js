@@ -10,6 +10,7 @@ const initialState = {
     reservations: [],
     loading: false,
     error: null,
+    successMessage:null,
 };
 export const fetchReservationByUserId = createAsyncThunk(
     'reservation/getReservationByUserId',
@@ -25,10 +26,9 @@ export const cancelReservation = createAsyncThunk(
     'reservation/cancelReservation',
     async ({idRide,idUser}, { rejectWithValue }) => { // Accept an object with idRide and idUser
         try {
-             // Pass both parameters to the API
-            return await cancelReservationAPI(idRide, idUser); // Return the success message
+            return await cancelReservationAPI(idRide, idUser);
         } catch (error) {
-            return rejectWithValue(error); // Reject with the error message
+            return rejectWithValue(error);
         }
     }
 );
@@ -38,10 +38,12 @@ export const createReservation = createAsyncThunk(
         try {
             return await createReservationAPI(reservationDetails);
         } catch (error) {
+            // Use rejectWithValue to pass the error to the .rejected case
             return rejectWithValue(error.message);
         }
     }
 );
+
 
 export const fetchReservationById = createAsyncThunk(
     'reservation/getReservation',
@@ -87,14 +89,17 @@ const reservationSlice = createSlice({
             .addCase(createReservation.pending, (state) => {
                 state.loading = true;
                 state.error = null;
+                state.successMessage =null;
             })
             .addCase(createReservation.fulfilled, (state, action) => {
                 state.loading = false;
                 state.reservations.push(action.payload);
+                state.successMessage = "Reservation created successfully";
             })
             .addCase(createReservation.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
+
             }).addCase(cancelReservation.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -135,6 +140,7 @@ const reservationSlice = createSlice({
                 }
                 state.reservations = [...state.reservations, ...newReservations];
                 state.loading = false;
+
             })
             .addCase(fetchReservationByRideId.rejected, (state, action) => {
                 state.loading = false;

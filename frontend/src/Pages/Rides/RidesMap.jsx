@@ -8,6 +8,7 @@ import { createReservation } from "../../Store/Slices/reservationSlice";
 import AddRideForm from '../../Components/AddRideForm';
 import SeatSelectionPopup from "../../Components/SeatSelectionPopUp";
 import "leaflet/dist/leaflet.css";
+import Alert from "react-bootstrap/Alert";
 
 const departureIcon = L.icon({
     iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png",
@@ -110,6 +111,7 @@ const MapClickHandler = ({ onMapClick }) => {
 
 const RidesMap = () => {
     const { rides, loading, error } = useSelector((state) => state.rides);
+    const {reservations , loading:loadingRes,error:errorRes,successMessage} = useSelector((state)=>state.reservations);
     const dispatch = useDispatch();
     const [coordinates, setCoordinates] = useState([]);
     const [mapLoaded, setMapLoaded] = useState(false);
@@ -123,6 +125,11 @@ const RidesMap = () => {
 
     const userID = JSON.parse(localStorage.getItem("user"))?.userId;
     const userRole = JSON.parse(localStorage.getItem("user"))?.role;
+
+    useEffect(()=>{
+        successMessage !== null && alert(successMessage);
+        errorRes !== null && alert(errorRes);
+    },[reservations,errorRes,successMessage])
 
     const handleReservation = (ride, seats) => {
         dispatch(createReservation({ ...ride, nbOfSeats: seats, idUser: userID }));
@@ -202,6 +209,7 @@ const RidesMap = () => {
             {mapLoaded && <MapBoundsAdjuster coordinates={coordinates} />}
             {userRole === "RIDER" && <MapClickHandler onMapClick={handleMapClick} />}
             {coordinates.map((coord) => (
+                coord.ride.availableSeats>0&&
                 <React.Fragment key={coord.id}>
                     {coord.departureCoordinates && (
                         <Marker
@@ -216,16 +224,33 @@ const RidesMap = () => {
                                     <p><strong>Available Seats: </strong> {coord.ride.availableSeats}</p>
                                     <p><strong>Destination : </strong>{coord.ride.destination}</p>
                                     <p><strong>Price: </strong> {coord.ride.pricePerSeat} TND</p>
-                                    <button
-                                        onClick={() => {
-                                            setSelectedRide(coord.ride);
-                                            setShowSeatSelection(true);
-                                        }}
-                                        className="mt-2 bg-blue-500 text-white p-2 rounded-lg"
-                                    >
-                                        Reserve a Seat
-                                    </button>
+                                    {
+                                        userRole === "PASSENGER"&& (
+                                            <button
+                                                onClick={() => {
+                                                    setSelectedRide(coord.ride);
+                                                    setShowSeatSelection(true);
+                                                }}
+                                                className="mt-2 bg-blue-500 text-white p-2 rounded-lg"
+                                            >
+                                                Book a Seat
+                                            </button>
+                                        )
+                                    }
+
                                 </div>
+                                {showSeatSelection && selectedRide && (
+                                    <div
+                                        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                                        <div className="bg-white p-6 rounded-lg shadow-xl">
+                                            <SeatSelectionPopup
+                                                availableSeats={selectedRide.availableSeats}
+                                                onClose={() => setShowSeatSelection(false)}
+                                                onSubmit={(seats) => handleReservation(selectedRide, seats)}
+                                            />
+                                        </div>
+                                    </div>
+                                )}
                             </Popup>
                         </Marker>
                     )}
@@ -258,17 +283,21 @@ const RidesMap = () => {
     }
 
     return (
-        <div className="min-h-screen flex flex-col items-center p-6 bg-gray-100">
+        <div className="min-h-screen flex flex-col items-center p-6 bg-gray-100 z-1">
             <h1 className="text-3xl font-bold text-center text-blue-600 mb-6">
                 Available Rides Map
             </h1>
 
             {showSeatSelection && selectedRide && (
-                <SeatSelectionPopup
-                    availableSeats={selectedRide.availableSeats}
-                    onClose={() => setShowSeatSelection(false)}
-                    onSubmit={(seats) => handleReservation(selectedRide, seats)}
-                />
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white p-6 rounded-lg shadow-xl">
+                        <SeatSelectionPopup
+                            availableSeats={selectedRide.availableSeats}
+                            onClose={() => setShowSeatSelection(false)}
+                            onSubmit={(seats) => handleReservation(selectedRide, seats)}
+                        />
+                    </div>
+                </div>
             )}
 
             <div className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-3 gap-8">

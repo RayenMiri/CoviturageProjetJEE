@@ -29,11 +29,11 @@ export const cancelReservationAPI = async(idRide,idUser)=>
 
 export const createReservationAPI = async (reservationDetails) => {
     try {
-        console.log('Received reservation details:', reservationDetails);
 
         if (!reservationDetails.idUser || !reservationDetails.idRide || !reservationDetails.nbOfSeats) {
-            return { error: 'Missing required reservation details' };
+            throw new Error('Missing required reservation details');
         }
+
         const response = await fetch(`${BASE_URL}/createReservation/${reservationDetails.idUser}/${reservationDetails.idRide}/${reservationDetails.nbOfSeats}`, {
             method: 'POST',
             headers: {
@@ -43,15 +43,16 @@ export const createReservationAPI = async (reservationDetails) => {
         });
 
         if (!response.ok) {
-            const errorData = await response.json();
-            return { error: errorData.message || 'Failed to create reservation' };
+            const errorData = await response.text();
+            throw new Error(errorData || 'Failed to create reservation');
         }
+
         return await response.json();
     } catch (error) {
-        console.error('Error creating reservation:', error);
-        return { error: error.message || 'An unexpected error occurred' };
+        throw error;
     }
 };
+
 
 export const fetchReservationByIdAPI = async (resId) => {
     try {
@@ -78,7 +79,8 @@ export const fetchReservationByRideIdAPI = async (rideId)=>{
         const response = await fetch(`${BASE_URL}/getReservationByRideId/${rideId}`);
         if(!response.ok){
             const errorData = await response.json();
-            return { error: errorData.message || 'Failed to fetch reservation by ride ID' };
+            //throw new Error(errorData.message || 'Failed to fetch reservation by ride ID' );
+            return {error:errorData.message}
         }
         return await response.json();
     }catch(error){

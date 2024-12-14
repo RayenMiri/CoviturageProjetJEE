@@ -13,7 +13,7 @@ const SeatSelectionPopup = ({ onClose, onSubmit, availableSeats }) => {
     };
 
     return (
-        <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
+        <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-[9999]">
             <div className="bg-white p-6 rounded-lg shadow-lg">
                 <h2 className="text-xl font-semibold">Select Number of Seats</h2>
                 <div className="mt-4">
