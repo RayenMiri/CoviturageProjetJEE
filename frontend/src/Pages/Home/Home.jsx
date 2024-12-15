@@ -73,13 +73,13 @@ const Home = () => {
         setReviewModalVisible(true);
     };
 
-    const submitReview = (rating) => {
+    const submitReview = (rating,isVisible) => {
         const review = {
             rating,
             ride: { idRide: selectedRide.idRide },
             user: { id: userID },
         };
-
+        setReviewModalVisible(isVisible)
         dispatch(createReview(review)).then((response) => {
             if (response.meta.requestStatus === "fulfilled") {
                 setReviewModalVisible(false);
