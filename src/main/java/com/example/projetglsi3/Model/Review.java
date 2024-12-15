@@ -16,10 +16,10 @@ public class Review {
     private Long idRev;
     private int rating;
     private String createdAt;
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "id_ride")
     private Ride ride;
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "id_reviewer")
     private User user;
 }

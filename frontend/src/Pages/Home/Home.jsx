@@ -5,6 +5,7 @@ import { createReservation, fetchReservationByUserId, cancelReservation } from '
 import { createReview } from '../../Store/Slices/ReviewSlice';
 import { Link } from "react-router-dom";
 import Modal from '../../Components/Modal';
+import ReviewModal from '../../Components/ReviewModal';
 import { getCurrentTime } from '../../Utils/getCurrentTimeUtil';
 
 const Home = () => {
@@ -17,7 +18,6 @@ const Home = () => {
     const [isModalVisible, setModalVisible] = useState(false);
     const [selectedRide, setSelectedRide] = useState(null);
     const [isReviewModalVisible, setReviewModalVisible] = useState(false);
-    const [rating, setRating] = useState(0);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { reviews, loadingRev, errorRev } = useSelector((state) => state.reviews);
 
@@ -52,7 +52,7 @@ const Home = () => {
     const handleCancelClick = (ride) => {
         const reservationToCancel = reservations.find((reservation) => {
             const rideMatch = reservation.ride?.idRide === ride.idRide;
-            const userMatch = String(reservation.user?.id) === String(userID); // Convert both to strings
+            const userMatch = String(reservation.user?.id) === String(userID);
             return rideMatch && userMatch;
         });
 
@@ -73,17 +73,13 @@ const Home = () => {
         setReviewModalVisible(true);
     };
 
-    const submitReview = () => {
-        if (rating === 0) {
-            alert("Please select a rating.");
-            return;
-        }
-
+    const submitReview = (rating,isVisible) => {
         const review = {
             rating,
             ride: { idRide: selectedRide.idRide },
             user: { id: userID },
         };
+        setReviewModalVisible(isVisible)
 
         dispatch(createReview(review)).then((response) => {
             if (response.meta.requestStatus === "fulfilled") {
@@ -115,7 +111,7 @@ const Home = () => {
             {!loading && !error && filteredRides.length === 0 && <p>No rides available.</p>}
 
             {/* Search Filters */}
-            <div className="filters p-4">
+            <div className="filters p-4 z-[9999]">
                 <input
                     type="text"
                     placeholder="Departure Location"
@@ -221,24 +217,23 @@ const Home = () => {
             {isModalVisible && (
                 <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
                     <Modal
-                        selectedRide={selectedRide}
+                        isVisible={true}
+                        ride={selectedRide}
+                        user={user}
+                        onClose={() => setModalVisible(false)}
                         onConfirm={onConfirm}
-                        onCancel={() => setModalVisible(false)}
                     />
                 </div>
             )}
 
-            {isReviewModalVisible && (
-                <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
-                    <Modal
-                        selectedRide={selectedRide}
-                        onConfirm={submitReview}
-                        onCancel={() => setReviewModalVisible(false)}
-                    />
-                </div>
-            )}
+            <ReviewModal
+                isVisible={isReviewModalVisible}
+                onClose={() => setReviewModalVisible(false)}
+                onSubmit={submitReview}
+            />
         </div>
     );
 };
 
 export default Home;
+
