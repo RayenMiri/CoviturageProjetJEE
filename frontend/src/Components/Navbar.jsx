@@ -10,7 +10,7 @@ const LoggedInLinks = ({ user, handleLogout }) => (
             user?.role === "PASSENGER" && (
                 <>
                     <li className="flex items-center gap-2">
-                        <Home className="h-5 w-5 text-white"/>
+                        <Home className="h- w-5 text-white"/>
                         <a href="/Home" className="text-white hover:text-orange-400 transition">Home</a>
                     </li>
                 </>
@@ -90,7 +90,7 @@ const Navbar = () => {
     const handleLogout = () => dispatch(logout());
 
     return (
-        <nav className="sticky top-0 z-50 bg-gradient-to-r from-blue-600 to-blue-800 shadow-md p-3">
+        <nav className="sticky top-0 z-50 bg-gradient-to-r from-blue-600 to-blue-800 shadow-md p-3 ">
             <div className="container mx-auto flex justify-between items-center">
                 {/* Logo */}
                 <div className="flex items-center gap-2">

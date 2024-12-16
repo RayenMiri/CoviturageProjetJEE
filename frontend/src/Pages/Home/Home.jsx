@@ -14,7 +14,7 @@ const Home = () => {
     const { reservations } = useSelector((state) => state.reservations);
     const user = JSON.parse(localStorage.getItem("user"));
     const userID = user?.userId;
-
+    console.log(user?.email)
     const [isModalVisible, setModalVisible] = useState(false);
     const [selectedRide, setSelectedRide] = useState(null);
     const [isReviewModalVisible, setReviewModalVisible] = useState(false);
@@ -27,16 +27,60 @@ const Home = () => {
     const [minPrice, setMinPrice] = useState('');
     const [maxPrice, setMaxPrice] = useState('');
 
+    const sendEmail = async (reservationDetails) => {
+        try {
+            const formattedDate = new Date().toLocaleString("en-US", {
+                weekday: "long",
+                day: "numeric",
+                month: "long",
+                hour: "numeric",
+                minute: "2-digit",
+                hour12: true
+            });
+
+            const response = await fetch('http://localhost:8083/api/email/sendemail', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    to: user?.email,
+                    subject: 'Reservation Confirmation',
+                    text: `
+                Dear ${user?.username},
+
+                We are pleased to inform you that your reservation made on ${formattedDate} has been successfully confirmed .
+                Should you have any questions or need further assistance, please do not hesitate to contact us.
+                We look forward to seeing you on the ride.
+                Best regards,
+                The Team `,
+                }),
+            });
+
+            if (response.ok) {
+                console.log('Email sent successfully!');
+            } else {
+                throw new Error('error occured while sending the mail');
+            }
+        } catch (error) {
+            console.error('an error occured while sending the mail:', error);
+        }
+    };
+
     const onConfirm = (reservationDetails) => {
         if (isSubmitting) return;
         setIsSubmitting(true);
 
-        dispatch(createReservation(reservationDetails)).finally(() => {
-            setIsSubmitting(false);
-            setModalVisible(false);
-        });
+        dispatch(createReservation(reservationDetails))
+            .then(() => {
+                // Si la réservation réussie, envoyer l'email
+                sendEmail(reservationDetails);
+            })
+            .finally(() => {
+                setIsSubmitting(false);
+                setModalVisible(false);
+            });
     };
-
     useEffect(() => {
         if (userID) {
             dispatch(fetchRides());
