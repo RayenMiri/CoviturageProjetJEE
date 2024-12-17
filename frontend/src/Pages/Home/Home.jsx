@@ -14,7 +14,6 @@ const Home = () => {
     const { reservations } = useSelector((state) => state.reservations);
     const user = JSON.parse(localStorage.getItem("user"));
     const userID = user?.userId;
-    console.log(user?.email)
     const [isModalVisible, setModalVisible] = useState(false);
     const [selectedRide, setSelectedRide] = useState(null);
     const [isReviewModalVisible, setReviewModalVisible] = useState(false);
@@ -27,7 +26,7 @@ const Home = () => {
     const [minPrice, setMinPrice] = useState('');
     const [maxPrice, setMaxPrice] = useState('');
 
-    const sendEmail = async (reservationDetails) => {
+    const sendEmail = async () => {
         try {
             const formattedDate = new Date().toLocaleString("en-US", {
                 weekday: "long",
@@ -74,7 +73,7 @@ const Home = () => {
         dispatch(createReservation(reservationDetails))
             .then(() => {
                 // Si la réservation réussie, envoyer l'email
-                sendEmail(reservationDetails);
+                sendEmail();
             })
             .finally(() => {
                 setIsSubmitting(false);
