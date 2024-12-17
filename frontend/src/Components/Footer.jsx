@@ -10,10 +10,10 @@ const Footer = () => {
                         <span className="ml-2 text-xl font-bold">WeRide</span>
                     </div>
                     <div className="flex space-x-4">
-                        <a href="/about" className="hover:text-indigo-400">About</a>
-                        <a href="/contact" className="hover:text-indigo-400">Contact</a>
-                        <a href="/privacy" className="hover:text-indigo-400">Privacy Policy</a>
-                        <a href="/terms" className="hover:text-indigo-400">Terms of Service</a>
+                        <a href="/about" className="hover:text-blue-400 no-underline text-cyan-50 font-medium">About</a>
+                        <a href="/contact" className="hover:text-blue-400 no-underline text-cyan-50 font-medium">Contact</a>
+                        <a href="/privacy" className="hover:text-blue-400 no-underline text-cyan-50 font-medium">Privacy Policy</a>
+                        <a href="/terms" className="hover:text-blue-400 no-underline text-cyan-50 font-medium">Terms of Service</a>
                     </div>
                 </div>
                 <div className="mt-8 text-center text-sm">

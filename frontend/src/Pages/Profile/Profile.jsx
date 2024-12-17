@@ -18,12 +18,12 @@ const Profile = () => {
                     </div>
                     <div className="md:w-2/3 md:pl-8">
                         <h1 className="text-2xl font-bold text-indigo-800 mb-2">{user?.username}</h1>
-                        <p className="text-gray-600 mb-6">Software Developer</p>
+                        <p className="text-gray-600 mb-6"> {user?.role}</p>
 
-                        <h2 className="text-xl font-semibold text-indigo-800 mb-4">Organization Information</h2>
-                        <p className="text-gray-700 mb-6">
-                            Estep Bilişim / Software Developer
-                        </p>
+                        {/*<h2 className="text-xl font-semibold text-indigo-800 mb-4">Role</h2>*/}
+                        {/*<p className="text-gray-700 mb-6">*/}
+                        {/*   */}
+                        {/*</p>*/}
 
                         <h2 className="text-xl font-semibold text-indigo-800 mb-4">Contact Information</h2>
                         <ul className="space-y-2 text-gray-700">
