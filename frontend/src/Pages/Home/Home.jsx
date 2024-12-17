@@ -105,11 +105,16 @@ const Home = () => {
                     idRide: reservationToCancel.ride?.idRide,
                     idUser: reservationToCancel.user?.id
                 })
-            );
+            ).then(() => {
+                // Re-fetch reservations and rides after cancellation
+                dispatch(fetchReservationByUserId(userID));
+                dispatch(fetchRides());
+            });
         } else {
             alert("No reservation found for this ride.");
         }
     };
+
 
     const handleReviewClick = (ride) => {
         setSelectedRide(ride);
